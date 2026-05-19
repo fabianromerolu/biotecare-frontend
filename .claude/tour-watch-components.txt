@@ -1,0 +1,19 @@
+# Componentes monitorizados por post-edit-tour-check.sh
+# Cuando alguno de estos archivos cambie, revisar si los data-tour-id siguen en sincronía con tourSteps.ts
+
+src/components/layout/Sidebar.tsx
+src/components/layout/TopBar.tsx
+src/components/patients/PatientForm.tsx
+src/components/patients/PatientTable.tsx
+src/components/images/ImageUploadZone.tsx
+src/components/predictions/ProbabilityGauge.tsx
+src/components/predictions/DoctorReviewPanel.tsx
+src/components/predictions/BiomarkersTable.tsx
+src/components/predictions/HeatmapViewer.tsx
+src/components/compliance/AIActDisclaimer.tsx
+src/components/compliance/AuditTrailNote.tsx
+src/app/(dashboard)/patients/page.tsx
+src/app/(dashboard)/patients/[patientId]/patient-detail-client.tsx
+src/app/(dashboard)/patients/[patientId]/images/[imageId]/image-detail-client.tsx
+src/app/(dashboard)/model/page.tsx
+src/lib/tour/tourSteps.ts

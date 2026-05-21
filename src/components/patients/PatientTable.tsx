@@ -25,7 +25,7 @@ export function PatientTable({
 }) {
   return (
     <div className="overflow-hidden rounded-lg border bg-card">
-      <Table>
+      <Table className="min-w-[760px]">
         <TableHeader>
           <TableRow>
             <TableHead>Codigo externo</TableHead>

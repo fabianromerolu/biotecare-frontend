@@ -5,7 +5,7 @@ import { useTourContext } from "./TourProvider";
 import { TourControls } from "./TourControls";
 import { cn } from "@/lib/utils";
 
-const TOOLTIP_WIDTH = 340;
+const MAX_TOOLTIP_WIDTH = 340;
 const OFFSET = 16;
 
 interface Position {
@@ -17,12 +17,13 @@ function computePosition(
   rect: DOMRect | null,
   placement: string,
   tooltipHeight: number,
+  tooltipWidth: number,
 ): Position {
   if (!rect) {
     // Modal: centrado en pantalla
     return {
       top: Math.max(16, window.innerHeight / 2 - tooltipHeight / 2),
-      left: Math.max(16, window.innerWidth / 2 - TOOLTIP_WIDTH / 2),
+      left: Math.max(12, window.innerWidth / 2 - tooltipWidth / 2),
     };
   }
 
@@ -34,7 +35,7 @@ function computePosition(
   switch (placement) {
     case "top":
       top = rect.top - tooltipHeight - OFFSET;
-      left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+      left = rect.left + rect.width / 2 - tooltipWidth / 2;
       break;
     case "top-start":
       top = rect.top - tooltipHeight - OFFSET;
@@ -42,7 +43,7 @@ function computePosition(
       break;
     case "bottom":
       top = rect.bottom + OFFSET;
-      left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+      left = rect.left + rect.width / 2 - tooltipWidth / 2;
       break;
     case "bottom-start":
       top = rect.bottom + OFFSET;
@@ -54,7 +55,7 @@ function computePosition(
       break;
     case "left":
       top = rect.top + rect.height / 2 - tooltipHeight / 2;
-      left = rect.left - TOOLTIP_WIDTH - OFFSET;
+      left = rect.left - tooltipWidth - OFFSET;
       break;
     default:
       top = rect.bottom + OFFSET;
@@ -62,7 +63,7 @@ function computePosition(
   }
 
   const margin = 12;
-  left = Math.max(margin, Math.min(left, vw - TOOLTIP_WIDTH - margin));
+  left = Math.max(margin, Math.min(left, vw - tooltipWidth - margin));
   top = Math.max(margin, Math.min(top, vh - tooltipHeight - margin));
 
   return { top, left };
@@ -82,11 +83,13 @@ export function TourTooltip() {
 
   if (!isActive || !currentStep) return null;
 
-  const tooltipHeight = ref.current?.offsetHeight ?? 200;
+  const tooltipWidth = Math.min(MAX_TOOLTIP_WIDTH, Math.max(280, window.innerWidth - 24));
+  const tooltipHeight = 220;
   const { top, left } = computePosition(
     targetRect,
     currentStep.placement,
     tooltipHeight,
+    tooltipWidth,
   );
 
   return (
@@ -100,7 +103,7 @@ export function TourTooltip() {
         "ring-1 ring-black/10",
         "animate-in fade-in-0 zoom-in-95 duration-150",
       )}
-      style={{ top, left, width: TOOLTIP_WIDTH }}
+      style={{ top, left, width: tooltipWidth }}
     >
       <div className="mb-1 flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">

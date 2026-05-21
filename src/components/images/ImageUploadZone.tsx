@@ -160,7 +160,7 @@ export function ImageUploadZone({
       <div className="grid gap-5 rounded-lg border bg-card p-5 md:grid-cols-2">
         <fieldset className="grid gap-2" data-tour-id="upload__eye-selector">
           <legend className="text-sm font-medium">Ojo</legend>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             {(["OD", "OS"] as const).map((value) => (
               <button
                 key={value}
@@ -174,7 +174,10 @@ export function ImageUploadZone({
                 )}
                 onClick={() => setEye(eye === value ? null : value)}
               >
-                {value === "OD" ? "OD Ojo Derecho" : "OS Ojo Izquierdo"}
+                <span className="block text-base">{value}</span>
+                <span className="block text-xs font-normal opacity-80">
+                  {value === "OD" ? "Ojo derecho" : "Ojo izquierdo"}
+                </span>
               </button>
             ))}
           </div>

@@ -3,7 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function AIActDisclaimer() {
   return (
-    <Alert className="sticky top-20 z-20 border-amber-600 bg-amber-100 text-amber-950">
+    <Alert className="border-amber-300 bg-amber-50 text-amber-950">
       <TriangleAlert className="size-4" aria-hidden="true" />
       <AlertTitle>Supervision humana obligatoria</AlertTitle>
       <AlertDescription>

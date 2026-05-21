@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Menu, Microscope, UsersRound } from "lucide-react";
+import { Activity, BookOpen, Menu, Microscope, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/patients", label: "Pacientes", icon: UsersRound },
   { href: "/model", label: "Modelo", icon: Activity },
+  { href: "/legal", label: "Legal", icon: BookOpen },
 ] as const;
 
 export function Sidebar() {
@@ -75,7 +76,9 @@ function SidebarContent({ pathname }: { pathname: string }) {
               data-tour-id={
                 item.href === "/patients"
                   ? "sidebar__nav-patients"
-                  : "sidebar__nav-model"
+                  : item.href === "/model"
+                  ? "sidebar__nav-model"
+                  : "sidebar__nav-legal"
               }
               className={cn(
                 "flex h-10 items-center gap-3 rounded-md px-3 text-sm transition-colors",
@@ -90,8 +93,8 @@ function SidebarContent({ pathname }: { pathname: string }) {
           );
         })}
       </nav>
-      <div className="border-t border-sidebar-border px-5 py-4 text-xs text-sidebar-foreground/70">
-        EU AI Act Art. 14 activo
+      <div className="border-t border-sidebar-border px-5 py-3 text-xs text-sidebar-foreground/50">
+        Biotecare · IVCM + IA clínica
       </div>
     </div>
   );

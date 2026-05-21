@@ -16,10 +16,11 @@ export interface TourStep {
   roles: TourRole[];
   isModal?: boolean;
   mountDelay?: number;
+  route?: string;
 }
 
 export interface TourRoute {
   pathname: string;
-  matchMode: "exact" | "startsWith";
+  matchMode: "exact" | "startsWith" | "pattern";
   steps: TourStep[];
 }

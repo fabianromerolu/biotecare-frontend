@@ -9,6 +9,7 @@ import {
   aggregatePatient,
   getHeatmapBlob,
   getImage,
+  getImageFileBlob,
   listPatientImages,
   predictImage,
   reviewPrediction,
@@ -67,6 +68,15 @@ export function usePredictImage(patientId: string, imageId: string) {
       toast.success("Analisis de IA completado.");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useImageFile(imageId: string) {
+  return useQuery({
+    queryKey: ["images", imageId, "file"],
+    queryFn: () => getImageFileBlob(imageId),
+    staleTime: 10 * 60_000,
+    retry: false,
   });
 }
 

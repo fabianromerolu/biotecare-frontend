@@ -1,10 +1,10 @@
 "use client";
 
-import { Brain, Edit3, FileImage, UploadCloud } from "lucide-react";
+import { ArrowLeft, Brain, Edit3, FileImage, UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { ImageCard } from "@/components/images/ImageCard";
 import { AIActDisclaimer } from "@/components/compliance/AIActDisclaimer";
+import { ImageCard } from "@/components/images/ImageCard";
 import { DoctorReviewPanel } from "@/components/predictions/DoctorReviewPanel";
 import { ProbabilityGauge } from "@/components/predictions/ProbabilityGauge";
 import { BiomarkersTable } from "@/components/predictions/BiomarkersTable";
@@ -18,19 +18,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { formatDate, methodLabel, sexLabel } from "@/lib/utils/formatters";
+import { formatDate, sexLabel } from "@/lib/utils/formatters";
 import { useAggregatePatient, usePatientImages, useReviewPrediction } from "@/hooks/useImages";
 import { usePatient } from "@/hooks/usePatients";
-import type { AggregationMethod, PredictionRead } from "@/types/api";
+import type { PredictionRead } from "@/types/api";
+
+// Parámetros fijos para máximo rendimiento del modelo
+const BEST_METHOD = "attention" as const;
+const BEST_THRESHOLD = 0.5;
 
 export function PatientDetailClient({ patientId }: { patientId: string }) {
   const patientQuery = usePatient(patientId);
@@ -38,8 +33,6 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
   const aggregateMutation = useAggregatePatient(patientId);
   const reviewMutation = useReviewPrediction();
   const [aggregatePrediction, setAggregatePrediction] = useState<PredictionRead | null>(null);
-  const [aggregationMethod, setAggregationMethod] = useState<AggregationMethod>("mean");
-  const [threshold, setThreshold] = useState(0.5);
 
   const images = imagesQuery.data ?? [];
   const canAggregate = images.some((image) => image.status === "predicted");
@@ -56,10 +49,20 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
 
   return (
     <div className="space-y-5">
+      <div>
+        <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground" asChild>
+          <Link href="/patients">
+            <ArrowLeft className="size-4" />
+            Volver a pacientes
+          </Link>
+        </Button>
+      </div>
+
+      {/* Información del paciente */}
       <section className="rounded-lg border bg-card p-5">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
-            <p className="font-mono text-sm text-muted-foreground">{patient.id}</p>
+            <p className="font-mono text-xs text-muted-foreground">{patient.id}</p>
             <h2 className="mt-1 text-xl font-semibold">{patient.external_code}</h2>
           </div>
           <Button variant="outline" asChild>
@@ -69,19 +72,26 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
             </Link>
           </Button>
         </div>
-        <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          <InfoItem label="Ano nac.">{patient.birth_year ?? "No registrado"}</InfoItem>
+        <div className="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+          <InfoItem label="Año nac.">{patient.birth_year ?? "No registrado"}</InfoItem>
           <InfoItem label="Sexo">{sexLabel(patient.sex)}</InfoItem>
-          <InfoItem label="Fecha creacion">{formatDate(patient.created_at)}</InfoItem>
-          <InfoItem label="Doctor ID">{patient.doctor_id}</InfoItem>
-        </dl>
+          <InfoItem label="Fecha creación">{formatDate(patient.created_at)}</InfoItem>
+          <InfoItem label="Doctor ID">
+            <span className="font-mono text-xs">{patient.doctor_id}</span>
+          </InfoItem>
+        </div>
       </section>
+
+      {/* Imágenes IVCM */}
+      <div data-tour-id="patient-detail__ai-act-disclaimer">
+        <AIActDisclaimer />
+      </div>
 
       <section className="space-y-3" data-tour-id="patient-detail__images-section">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
-            <h2 className="text-base font-semibold">Imagenes IVCM</h2>
-            <p className="text-sm text-muted-foreground">{images.length} imagenes registradas</p>
+            <h2 className="text-base font-semibold">Imágenes IVCM</h2>
+            <p className="text-sm text-muted-foreground">{images.length} imágenes registradas</p>
           </div>
           <Button asChild data-tour-id="patient-detail__upload-button">
             <Link href={`/patients/${patient.id}/upload`}>
@@ -93,8 +103,8 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
         {images.length === 0 ? (
           <EmptyState
             icon={FileImage}
-            title="Sin imagenes"
-            description="Sube una imagen IVCM para iniciar el analisis."
+            title="Sin imágenes"
+            description="Sube una imagen IVCM para iniciar el análisis."
             action={
               <Button asChild>
                 <Link href={`/patients/${patient.id}/upload`}>
@@ -113,68 +123,37 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
         )}
       </section>
 
+      {/* Análisis agregado del paciente */}
       <section className="space-y-4">
-        <div data-tour-id="patient-detail__ai-act-disclaimer">
-          <AIActDisclaimer />
-        </div>
         <Card data-tour-id="patient-detail__aggregation-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Brain className="size-4" aria-hidden="true" />
-              Prediccion agregada del paciente
+              Análisis agregado del paciente
             </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Combina todas las imágenes con predicción usando el algoritmo de mayor precisión.
+            </p>
           </CardHeader>
           <CardContent>
-            <form
-              className="grid gap-4 lg:grid-cols-[220px_1fr_auto]"
-              onSubmit={(event) => {
-                event.preventDefault();
+            <Button
+              data-tour-id="patient-detail__aggregation-submit"
+              disabled={!canAggregate || aggregateMutation.isPending}
+              onClick={() =>
                 aggregateMutation.mutate(
-                  { aggregation_method: aggregationMethod, threshold },
-                  {
-                  onSuccess: (prediction) => setAggregatePrediction(prediction),
-                  },
-                );
-              }}
+                  { aggregation_method: BEST_METHOD, threshold: BEST_THRESHOLD },
+                  { onSuccess: (prediction) => setAggregatePrediction(prediction) },
+                )
+              }
             >
-              <div className="grid gap-2">
-                <Label>Metodo</Label>
-                <Select
-                  value={aggregationMethod}
-                  onValueChange={(value) => setAggregationMethod(value as AggregationMethod)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mean">Promedio</SelectItem>
-                    <SelectItem value="max">Maximo</SelectItem>
-                    <SelectItem value="attention">Atencion</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="threshold">Umbral {threshold.toFixed(2)}</Label>
-                <Slider
-                  id="threshold"
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  value={[threshold]}
-                  onValueChange={([value]) => setThreshold(value)}
-                />
-              </div>
-              <div className="flex items-end">
-                <Button
-                  type="submit"
-                  disabled={!canAggregate || aggregateMutation.isPending}
-                  data-tour-id="patient-detail__aggregation-submit"
-                >
-                  <Brain />
-                  {aggregateMutation.isPending ? "Generando" : "Generar"}
-                </Button>
-              </div>
-            </form>
+              <Brain />
+              {aggregateMutation.isPending ? "Analizando…" : "Generar análisis"}
+            </Button>
+            {!canAggregate && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Se activa cuando al menos una imagen tiene predicción individual.
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -198,12 +177,7 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
               <BiomarkersTable biomarkers={aggregatePrediction.biomarkers} />
             </div>
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Metodo actual: {methodLabel(aggregationMethod)}. La agregacion se habilita
-            cuando al menos una imagen tiene prediccion.
-          </p>
-        )}
+        ) : null}
       </section>
     </div>
   );
@@ -212,8 +186,8 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
 function InfoItem({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="mt-1 break-words font-medium">{children}</dd>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 wrap-break-word font-medium">{children}</p>
     </div>
   );
 }

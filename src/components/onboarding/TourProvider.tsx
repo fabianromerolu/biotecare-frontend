@@ -5,14 +5,17 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { usePatientImages } from "@/hooks/useImages";
+import { usePatients } from "@/hooks/usePatients";
 import { useAuthStore } from "@/stores/authStore";
 import { TOUR_ROUTES } from "@/lib/tour/tourSteps";
 import { tourStorage } from "@/lib/tour/tourStorage";
-import type { TourStep } from "@/lib/tour/tourTypes";
+import type { TourRoute, TourStep } from "@/lib/tour/tourTypes";
 
 interface TourContextValue {
   isActive: boolean;
@@ -36,9 +39,20 @@ const GLOBAL_STEP_IDS = new Set([
   "topbar__logout-button",
 ]);
 
+const RESERVED_PATIENT_PATHS = new Set(["new"]);
+
 export function TourProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const role = useAuthStore((state) => state.user?.role ?? "doctor");
+  const patientsQuery = usePatients();
+  const firstPatientId = patientsQuery.data?.[0]?.id ?? null;
+  const currentPatientId = extractPatientId(pathname);
+  const patientIdForTour = currentPatientId ?? firstPatientId;
+  const imagesQuery = usePatientImages(patientIdForTour ?? "", Boolean(patientIdForTour));
+  const firstImageId = imagesQuery.data?.[0]?.id ?? null;
+  const currentImageId = extractImageId(pathname);
+  const imageIdForTour = currentImageId ?? firstImageId;
 
   const [isActive, setIsActive] = useState(false);
   const [activeSteps, setActiveSteps] = useState<TourStep[]>([]);
@@ -47,45 +61,43 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   const observerRef = useRef<ResizeObserver | null>(null);
   const scrollListenerRef = useRef<(() => void) | null>(null);
+  const timerRef = useRef<number | null>(null);
+
+  const clearActivationTimer = useCallback(() => {
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const detachObservers = useCallback(() => {
+    observerRef.current?.disconnect();
+    observerRef.current = null;
+    if (scrollListenerRef.current) {
+      window.removeEventListener("scroll", scrollListenerRef.current);
+      scrollListenerRef.current = null;
+    }
+  }, []);
 
   const buildSteps = useCallback(
     (forceGlobal = false): TourStep[] => {
-      const isGlobalDone = tourStorage.isGlobalCompleted();
-      const steps: TourStep[] = [];
+      const includeGlobal = !tourStorage.isGlobalCompleted() || forceGlobal;
+      const fullJourney = forceGlobal || pathname === "/patients";
+      const matchedRoutes = fullJourney
+        ? TOUR_ROUTES
+        : TOUR_ROUTES.filter((route) => routeMatches(route, pathname));
 
-      // Pasos de bienvenida global (solo si es la primera vez o forzado)
-      if (!isGlobalDone || forceGlobal) {
-        const globalRoute = TOUR_ROUTES.find(
-          (r) => r.pathname === "/patients" && r.matchMode === "exact",
-        );
-        if (globalRoute) {
-          const globalSteps = globalRoute.steps.filter((s) =>
-            GLOBAL_STEP_IDS.has(s.targetId),
-          );
-          steps.push(
-            ...globalSteps.filter(
-              (s) => s.roles.includes("all") || s.roles.includes(role),
-            ),
-          );
-        }
-      }
+      const routeSteps = matchedRoutes
+        .flatMap((route) => route.steps)
+        .filter((step) => includeGlobal || !GLOBAL_STEP_IDS.has(step.targetId))
+        .filter((step) => step.roles.includes("all") || step.roles.includes(role));
 
-      // Pasos específicos de la ruta actual (excluir los globales para no repetir)
-      const routeSteps = TOUR_ROUTES.filter((r) => {
-        if (r.matchMode === "exact") return r.pathname === pathname;
-        return pathname.startsWith(r.pathname);
-      })
-        .flatMap((r) => r.steps)
-        .filter((s) => !GLOBAL_STEP_IDS.has(s.targetId))
-        .filter((s) => s.roles.includes("all") || s.roles.includes(role));
-
-      // Deduplicar por targetId manteniendo el primero encontrado
       const seen = new Set<string>();
       const deduped: TourStep[] = [];
-      for (const s of [...steps, ...routeSteps]) {
-        if (!seen.has(s.targetId)) {
-          seen.add(s.targetId);
-          deduped.push(s);
+      for (const step of routeSteps) {
+        if (!seen.has(step.targetId)) {
+          seen.add(step.targetId);
+          deduped.push(step);
         }
       }
 
@@ -103,14 +115,27 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     return el.getBoundingClientRect();
   }, []);
 
+  const resolveStepRoute = useCallback(
+    (step: TourStep): string | null => {
+      if (!step.route) return null;
+
+      let href = step.route;
+      if (href.includes("[patientId]")) {
+        if (!patientIdForTour) return null;
+        href = href.replace("[patientId]", patientIdForTour);
+      }
+      if (href.includes("[imageId]")) {
+        if (!imageIdForTour) return null;
+        href = href.replace("[imageId]", imageIdForTour);
+      }
+      return href;
+    },
+    [imageIdForTour, patientIdForTour],
+  );
+
   const attachObservers = useCallback(
     (step: TourStep) => {
-      observerRef.current?.disconnect();
-      if (scrollListenerRef.current) {
-        window.removeEventListener("scroll", scrollListenerRef.current);
-        scrollListenerRef.current = null;
-      }
-
+      detachObservers();
       if (step.isModal) return;
 
       const el = document.querySelector<HTMLElement>(
@@ -128,40 +153,95 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       scrollListenerRef.current = onScroll;
       window.addEventListener("scroll", onScroll, { passive: true });
     },
-    [],
+    [detachObservers],
+  );
+
+  const finishTour = useCallback(() => {
+    tourStorage.markGlobalCompleted();
+    tourStorage.markRouteCompleted(pathname);
+    clearActivationTimer();
+    detachObservers();
+    setIsActive(false);
+    setActiveSteps([]);
+    setTargetRect(null);
+  }, [clearActivationTimer, detachObservers, pathname]);
+
+  const skipMissingStep = useCallback(
+    (missingIndex: number) => {
+      setStepIndex((current) => {
+        if (current !== missingIndex) return current;
+        let nextIndex = current + 1;
+        while (nextIndex < activeSteps.length) {
+          const nextStep = activeSteps[nextIndex];
+          if (!nextStep?.route || resolveStepRoute(nextStep)) break;
+          nextIndex += 1;
+        }
+
+        if (nextIndex >= activeSteps.length) {
+          window.setTimeout(finishTour, 0);
+          return current;
+        }
+        return nextIndex;
+      });
+    },
+    [activeSteps, finishTour, resolveStepRoute],
   );
 
   const activateStep = useCallback(
-    (step: TourStep) => {
-      const delay = step.mountDelay ?? 0;
+    (step: TourStep, index: number) => {
+      clearActivationTimer();
+      detachObservers();
+      setTargetRect(null);
 
-      if (delay === 0) {
+      const href = resolveStepRoute(step);
+      if (step.route && !href) {
+        timerRef.current = window.setTimeout(() => skipMissingStep(index), 1200);
+        return;
+      }
+
+      const shouldNavigate = Boolean(href && href !== pathname);
+      if (href && shouldNavigate) {
+        router.push(href);
+      }
+
+      const initialDelay = (step.mountDelay ?? 0) + (shouldNavigate ? 650 : 0);
+      const tryResolve = (attempt = 0) => {
+        if (step.isModal) {
+          setTargetRect(null);
+          return;
+        }
+
         const rect = resolveRect(step);
-        setTargetRect(rect);
-        if (!step.isModal && rect) {
+        if (rect) {
+          setTargetRect(rect);
           const el = document.querySelector<HTMLElement>(
             `[data-tour-id="${step.targetId}"]`,
           );
           el?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-        attachObservers(step);
-      } else {
-        setTargetRect(null);
-        const t = window.setTimeout(() => {
-          const rect = resolveRect(step);
-          setTargetRect(rect);
-          if (!step.isModal && rect) {
-            const el = document.querySelector<HTMLElement>(
-              `[data-tour-id="${step.targetId}"]`,
-            );
-            el?.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
           attachObservers(step);
-        }, delay);
-        return t;
-      }
+          return;
+        }
+
+        if (attempt < 6) {
+          timerRef.current = window.setTimeout(() => tryResolve(attempt + 1), 180);
+          return;
+        }
+
+        skipMissingStep(index);
+      };
+
+      timerRef.current = window.setTimeout(() => tryResolve(), initialDelay);
     },
-    [resolveRect, attachObservers],
+    [
+      attachObservers,
+      clearActivationTimer,
+      detachObservers,
+      pathname,
+      resolveRect,
+      resolveStepRoute,
+      router,
+      skipMissingStep,
+    ],
   );
 
   const startTour = useCallback(
@@ -171,23 +251,9 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       setActiveSteps(steps);
       setStepIndex(0);
       setIsActive(true);
-      activateStep(steps[0]!);
     },
-    [buildSteps, activateStep],
+    [buildSteps],
   );
-
-  const finishTour = useCallback(() => {
-    tourStorage.markGlobalCompleted();
-    tourStorage.markRouteCompleted(pathname);
-    observerRef.current?.disconnect();
-    if (scrollListenerRef.current) {
-      window.removeEventListener("scroll", scrollListenerRef.current);
-      scrollListenerRef.current = null;
-    }
-    setIsActive(false);
-    setActiveSteps([]);
-    setTargetRect(null);
-  }, [pathname]);
 
   const next = useCallback(() => {
     const nextIdx = stepIndex + 1;
@@ -196,21 +262,29 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     setStepIndex(nextIdx);
-    activateStep(activeSteps[nextIdx]!);
-  }, [activeSteps, stepIndex, finishTour, activateStep]);
+  }, [activeSteps.length, finishTour, stepIndex]);
 
   const prev = useCallback(() => {
     const prevIdx = stepIndex - 1;
     if (prevIdx < 0) return;
     setStepIndex(prevIdx);
-    activateStep(activeSteps[prevIdx]!);
-  }, [activeSteps, stepIndex, activateStep]);
+  }, [stepIndex]);
 
   const skip = useCallback(() => {
     finishTour();
   }, [finishTour]);
 
-  // Cerrar con Escape
+  const currentStep = useMemo(
+    () => (isActive ? (activeSteps[stepIndex] ?? null) : null),
+    [activeSteps, isActive, stepIndex],
+  );
+
+  useEffect(() => {
+    if (!isActive || !currentStep) return;
+    const t = window.setTimeout(() => activateStep(currentStep, stepIndex), 0);
+    return () => window.clearTimeout(t);
+  }, [activateStep, currentStep, isActive, stepIndex]);
+
   useEffect(() => {
     if (!isActive) return;
     const onKey = (e: KeyboardEvent) => {
@@ -220,7 +294,6 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [isActive, skip]);
 
-  // Auto-inicio al montar: solo si el tour global no se completó
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (tourStorage.isGlobalCompleted()) return;
@@ -229,17 +302,12 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Cleanup al desmontar
   useEffect(() => {
     return () => {
-      observerRef.current?.disconnect();
-      if (scrollListenerRef.current) {
-        window.removeEventListener("scroll", scrollListenerRef.current);
-      }
+      clearActivationTimer();
+      detachObservers();
     };
-  }, []);
-
-  const currentStep = isActive ? (activeSteps[stepIndex] ?? null) : null;
+  }, [clearActivationTimer, detachObservers]);
 
   return (
     <TourContext.Provider
@@ -264,4 +332,45 @@ export function useTourContext(): TourContextValue {
   const ctx = useContext(TourContext);
   if (!ctx) throw new Error("useTourContext must be inside TourProvider");
   return ctx;
+}
+
+function routeMatches(route: TourRoute, currentPathname: string) {
+  if (route.matchMode === "exact") return route.pathname === currentPathname;
+  if (route.matchMode === "startsWith") return currentPathname.startsWith(route.pathname);
+  return patternMatches(route.pathname, currentPathname);
+}
+
+function patternMatches(pattern: string, currentPathname: string) {
+  const patternSegments = segments(pattern);
+  const currentSegments = segments(currentPathname);
+  if (patternSegments.length !== currentSegments.length) return false;
+
+  return patternSegments.every((segment, index) => {
+    const current = currentSegments[index];
+    if (segment === "[patientId]" && RESERVED_PATIENT_PATHS.has(current)) {
+      return false;
+    }
+    if (segment.startsWith("[") && segment.endsWith("]")) {
+      return Boolean(current);
+    }
+    return segment === current;
+  });
+}
+
+function segments(path: string) {
+  return path.split("/").filter(Boolean);
+}
+
+function extractPatientId(path: string): string | null {
+  const parts = segments(path);
+  if (parts[0] !== "patients") return null;
+  const patientId = parts[1];
+  if (!patientId || RESERVED_PATIENT_PATHS.has(patientId)) return null;
+  return patientId;
+}
+
+function extractImageId(path: string): string | null {
+  const parts = segments(path);
+  if (parts[0] !== "patients" || parts[2] !== "images") return null;
+  return parts[3] ?? null;
 }

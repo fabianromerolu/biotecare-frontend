@@ -2,8 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -48,73 +46,60 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ── Paleta médica — azul clínico ─────────────────────────────────────────── */
 :root {
-  --background: oklch(0.985 0.004 247);
-  --foreground: oklch(0.18 0.024 248);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.024 248);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.024 248);
-  --primary: oklch(0.31 0.075 245);
-  --primary-foreground: oklch(0.985 0.004 247);
-  --secondary: oklch(0.96 0.01 247);
-  --secondary-foreground: oklch(0.24 0.03 248);
-  --muted: oklch(0.95 0.009 247);
-  --muted-foreground: oklch(0.48 0.022 248);
-  --accent: oklch(0.94 0.035 188);
-  --accent-foreground: oklch(0.24 0.03 248);
-  --destructive: oklch(0.55 0.21 27);
-  --border: oklch(0.88 0.012 247);
-  --input: oklch(0.9 0.012 247);
-  --ring: oklch(0.43 0.1 245);
-  --chart-1: oklch(0.58 0.15 151);
-  --chart-2: oklch(0.55 0.18 27);
-  --chart-3: oklch(0.65 0.14 70);
-  --chart-4: oklch(0.48 0.11 245);
-  --chart-5: oklch(0.52 0.1 187);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.24 0.04 248);
-  --sidebar-foreground: oklch(0.96 0.005 247);
-  --sidebar-primary: oklch(0.58 0.15 151);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.31 0.052 248);
-  --sidebar-accent-foreground: oklch(0.98 0.004 247);
-  --sidebar-border: oklch(0.36 0.04 248);
-  --sidebar-ring: oklch(0.58 0.15 151);
-}
+  /* Fondo general: blanco con toque azul muy sutil */
+  --background: oklch(0.982 0.006 220);
+  --foreground: oklch(0.16 0.030 235);
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Cards y popovers: blanco puro */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.030 235);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.030 235);
+
+  /* Azul médico principal */
+  --primary: oklch(0.42 0.21 230);
+  --primary-foreground: oklch(0.99 0 0);
+
+  /* Secundario: azul muy claro para fondos secundarios */
+  --secondary: oklch(0.95 0.012 225);
+  --secondary-foreground: oklch(0.24 0.035 232);
+
+  /* Muted: gris-azulado suave */
+  --muted: oklch(0.94 0.008 220);
+  --muted-foreground: oklch(0.46 0.022 228);
+
+  /* Accent: teal médico suave */
+  --accent: oklch(0.93 0.048 183);
+  --accent-foreground: oklch(0.22 0.04 188);
+
+  /* Destructivo: rojo clínico */
+  --destructive: oklch(0.54 0.22 27);
+
+  /* Bordes e inputs */
+  --border: oklch(0.87 0.012 222);
+  --input: oklch(0.90 0.010 222);
+  --ring: oklch(0.55 0.19 230);
+
+  /* Charts: tonos médicos */
+  --chart-1: oklch(0.60 0.16 165);
+  --chart-2: oklch(0.53 0.19 27);
+  --chart-3: oklch(0.65 0.13 70);
+  --chart-4: oklch(0.47 0.12 230);
+  --chart-5: oklch(0.52 0.11 187);
+
+  --radius: 0.6rem;
+
+  /* Sidebar: azul marino médico profundo */
+  --sidebar: oklch(0.19 0.070 238);
+  --sidebar-foreground: oklch(0.94 0.008 225);
+  --sidebar-primary: oklch(0.60 0.16 165);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.28 0.060 238);
+  --sidebar-accent-foreground: oklch(0.97 0.006 225);
+  --sidebar-border: oklch(0.32 0.048 240);
+  --sidebar-ring: oklch(0.60 0.16 165);
 }
 
 @layer base {
@@ -133,5 +118,127 @@
   select,
   textarea {
     @apply focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none;
+  }
+}
+
+.auth-stage {
+  background:
+    linear-gradient(135deg, #07130f 0%, #092019 38%, #102a2d 72%, #ecfeff 140%);
+}
+
+.app-shell {
+  background:
+    linear-gradient(180deg, rgba(236, 254, 255, 0.72) 0%, rgba(255, 255, 255, 0) 34%),
+    linear-gradient(to right, rgba(2, 132, 199, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(5, 150, 105, 0.04) 1px, transparent 1px),
+    var(--background);
+  background-size: auto, 72px 72px, 72px 72px, auto;
+  background-attachment: fixed;
+}
+
+.auth-grid {
+  background-image:
+    linear-gradient(to right, rgba(103, 232, 249, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(110, 231, 183, 0.10) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+  animation: auth-grid-drift 24s linear infinite;
+}
+
+.auth-scan {
+  background: linear-gradient(105deg, transparent 0%, rgba(125, 211, 252, 0.24) 48%, transparent 100%);
+  filter: blur(18px);
+  transform: skewX(-18deg);
+  animation: auth-scan 8s ease-in-out infinite;
+}
+
+.auth-circuit {
+  position: relative;
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  background-image:
+    linear-gradient(90deg, transparent 0 22%, rgba(103, 232, 249, 0.24) 22% 23%, transparent 23% 100%),
+    linear-gradient(0deg, transparent 0 34%, rgba(110, 231, 183, 0.20) 34% 35%, transparent 35% 100%),
+    linear-gradient(90deg, transparent 0 64%, rgba(255, 255, 255, 0.16) 64% 65%, transparent 65% 100%);
+  opacity: 0.78;
+  transform: rotate(-8deg);
+}
+
+.auth-circuit::before,
+.auth-circuit::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgba(110, 231, 183, 0.18);
+  inset: 18%;
+}
+
+.auth-circuit::after {
+  inset: 34% 10% 12% 46%;
+  border-color: rgba(103, 232, 249, 0.22);
+  animation: auth-circuit-pulse 3.8s ease-in-out infinite;
+}
+
+.auth-circuit-secondary {
+  transform: rotate(10deg);
+  opacity: 0.54;
+}
+
+.auth-signal-panel span {
+  transform-origin: left center;
+  animation: auth-signal-fill 2.8s ease-in-out infinite;
+}
+
+@keyframes auth-grid-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 64px 64px;
+  }
+}
+
+@keyframes auth-scan {
+  0%,
+  100% {
+    transform: translateX(-40%) skewX(-18deg);
+    opacity: 0;
+  }
+  18%,
+  58% {
+    opacity: 1;
+  }
+  72% {
+    transform: translateX(260%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes auth-circuit-pulse {
+  0%,
+  100% {
+    opacity: 0.24;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+@keyframes auth-signal-fill {
+  0%,
+  100% {
+    transform: scaleX(0.34);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-grid,
+  .auth-scan,
+  .auth-circuit::after,
+  .auth-signal-panel span {
+    animation: none;
   }
 }

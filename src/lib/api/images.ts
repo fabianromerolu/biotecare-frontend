@@ -57,6 +57,13 @@ export async function getHeatmapBlob(imageId: string): Promise<Blob> {
   return data;
 }
 
+export async function getImageFileBlob(imageId: string): Promise<Blob> {
+  const { data } = await apiClient.get<Blob>(`/images/${imageId}/file`, {
+    responseType: "blob",
+  });
+  return data;
+}
+
 export async function aggregatePatient(
   patientId: string,
   input: AggregatePatientInput,

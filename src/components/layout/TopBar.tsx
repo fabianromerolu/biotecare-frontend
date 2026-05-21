@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/authStore";
 const TITLES: Record<string, string> = {
   "/patients": "Pacientes",
   "/model": "Estado del sistema",
+  "/legal": "Marco legal",
 };
 
 export function TopBar() {

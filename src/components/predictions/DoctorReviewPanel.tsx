@@ -28,12 +28,13 @@ export function DoctorReviewPanel({
   if (prediction.doctor_override === true) {
     return (
       <ReviewBox
-        title="Prediccion aceptada"
+        title="Revisión completada"
         badge={
           <Badge className="border-emerald-700 bg-emerald-50 text-emerald-800" variant="outline">
             <CheckCircle2 /> Aceptada
           </Badge>
         }
+        note="Predicción aceptada por el médico responsable."
       />
     );
   }
@@ -41,12 +42,13 @@ export function DoctorReviewPanel({
   if (prediction.doctor_override === false) {
     return (
       <ReviewBox
-        title="Prediccion rechazada"
+        title="Revisión completada"
         badge={
           <Badge className="border-amber-700 bg-amber-50 text-amber-800" variant="outline">
             <XCircle /> Rechazada
           </Badge>
         }
+        note="Predicción rechazada por el médico responsable."
       />
     );
   }
@@ -56,22 +58,25 @@ export function DoctorReviewPanel({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 id="review-title" className="text-sm font-semibold">
-            Revision medica
+            Revisión médica
           </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Confirme su valoración clínica del resultado.
+          </p>
           <Badge className="mt-2 border-amber-700 bg-amber-50 text-amber-800" variant="outline">
-            <Clock3 /> Pendiente de revision
+            <Clock3 /> Pendiente de revisión
           </Badge>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
           <ReviewAction
             accepted
             disabled={isPending}
-            label={isPending ? "Registrando" : "Aceptar prediccion"}
+            label={isPending ? "Registrando…" : "Aceptar resultado"}
             onConfirm={() => onReview(true)}
           />
           <ReviewAction
             disabled={isPending}
-            label={isPending ? "Registrando" : "Rechazar prediccion"}
+            label={isPending ? "Registrando…" : "Rechazar resultado"}
             onConfirm={() => onReview(false)}
           />
         </div>
@@ -80,7 +85,15 @@ export function DoctorReviewPanel({
   );
 }
 
-function ReviewBox({ title, badge }: { title: string; badge: React.ReactNode }) {
+function ReviewBox({
+  title,
+  badge,
+  note,
+}: {
+  title: string;
+  badge: React.ReactNode;
+  note: string;
+}) {
   return (
     <section className="rounded-lg border bg-card p-4" aria-labelledby="review-title">
       <div className="flex items-center justify-between gap-3">
@@ -89,9 +102,7 @@ function ReviewBox({ title, badge }: { title: string; badge: React.ReactNode }) 
         </h2>
         {badge}
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">
-        La revision registrada queda bloqueada en esta interfaz para preservar la trazabilidad.
-      </p>
+      <p className="mt-2 text-xs text-muted-foreground">{note}</p>
     </section>
   );
 }
@@ -118,18 +129,17 @@ function ReviewAction({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {accepted ? "Aceptar resultado del modelo" : "Rechazar resultado del modelo"}
+            {accepted ? "Confirmar aceptación" : "Confirmar rechazo"}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            El resultado generado por este sistema de inteligencia artificial es unicamente un
-            soporte para la decision clinica. El diagnostico final es responsabilidad exclusiva del
-            medico.
+            Esta acción quedará registrada en el expediente clínico y no puede modificarse
+            posteriormente.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm}>
-            {accepted ? "Aceptar" : "Rechazar"}
+            {accepted ? "Aceptar resultado" : "Rechazar resultado"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

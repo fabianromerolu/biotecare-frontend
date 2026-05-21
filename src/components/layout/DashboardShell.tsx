@@ -5,7 +5,7 @@ import { TopBar } from "@/components/layout/TopBar";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="app-shell min-h-screen">
       <Sidebar />
       <div className="lg:pl-64">
         <TopBar />

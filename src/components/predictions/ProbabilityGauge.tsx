@@ -10,12 +10,15 @@ export function ProbabilityGauge({
 }) {
   const value = clamp(probability, 0, 1);
   const thresholdValue = clamp(threshold, 0, 1);
-  const needle = polarToCartesian(100, 100, 74, 180 - value * 180);
-  const thresholdPoint = polarToCartesian(100, 100, 82, 180 - thresholdValue * 180);
+
+  // Orientación: velocímetro horizontal (flat abajo, arco arriba)
+  // 270° = LEFT (0%), 360°/0° = TOP (50%), 90° = RIGHT (100%)
+  const needle = polarToCartesian(100, 100, 74, 270 + value * 180);
+  const thresholdPoint = polarToCartesian(100, 100, 82, 270 + thresholdValue * 180);
   const isDryEye = value >= thresholdValue;
 
   return (
-    <section className="rounded-lg border bg-card p-4" aria-labelledby="probability-title">
+    <section className="flex h-full flex-col rounded-lg border bg-card p-4" aria-labelledby="probability-title">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 id="probability-title" className="text-sm font-semibold">
           Resultado del modelo de IA
@@ -31,26 +34,63 @@ export function ProbabilityGauge({
           {isDryEye ? "Ojo seco detectado" : "Normal"}
         </span>
       </div>
-      <svg
-        viewBox="0 0 200 125"
-        role="img"
-        aria-label={`Probabilidad de ojo seco: ${formatProbability(value)}. Resultado: ${
-          isDryEye ? "Ojo seco detectado" : "Normal"
-        }.`}
-        className="mx-auto h-auto w-full max-w-sm"
-      >
-        <path d={describeArc(100, 100, 82, 180, 180 - thresholdValue * 180)} fill="none" stroke="#16A34A" strokeWidth="18" strokeLinecap="round" />
-        <path d={describeArc(100, 100, 82, 180 - thresholdValue * 180, 0)} fill="none" stroke="#DC2626" strokeWidth="18" strokeLinecap="round" />
-        <line x1="100" y1="100" x2={thresholdPoint.x} y2={thresholdPoint.y} stroke="#1E3A5F" strokeWidth="2" strokeDasharray="4 4" />
-        <line x1="100" y1="100" x2={needle.x} y2={needle.y} stroke="#111827" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="100" cy="100" r="6" fill="#111827" />
-        <text x="100" y="88" textAnchor="middle" className="fill-foreground text-2xl font-semibold">
-          {formatProbability(value)}
-        </text>
-        <text x="100" y="118" textAnchor="middle" className="fill-muted-foreground text-[11px]">
-          umbral {thresholdValue.toFixed(2)}
-        </text>
-      </svg>
+      <div className="flex flex-1 items-center justify-center">
+        <svg
+          viewBox="0 0 200 125"
+          role="img"
+          aria-label={`Probabilidad de ojo seco: ${formatProbability(value)}. Resultado: ${
+            isDryEye ? "Ojo seco detectado" : "Normal"
+          }.`}
+          className="w-full max-w-[280px]"
+        >
+          {/* Arco verde: zona normal (izquierda → umbral) */}
+          <path
+            d={describeArc(100, 100, 82, 270, 270 + thresholdValue * 180)}
+            fill="none"
+            stroke="#16A34A"
+            strokeWidth="18"
+            strokeLinecap="round"
+          />
+          {/* Arco rojo: zona ojo seco (umbral → derecha) */}
+          <path
+            d={describeArc(100, 100, 82, 270 + thresholdValue * 180, 450)}
+            fill="none"
+            stroke="#DC2626"
+            strokeWidth="18"
+            strokeLinecap="round"
+          />
+          {/* Línea de umbral */}
+          <line
+            x1="100"
+            y1="100"
+            x2={thresholdPoint.x}
+            y2={thresholdPoint.y}
+            stroke="#1E3A5F"
+            strokeWidth="2"
+            strokeDasharray="4 4"
+          />
+          {/* Aguja */}
+          <line
+            x1="100"
+            y1="100"
+            x2={needle.x}
+            y2={needle.y}
+            stroke="#111827"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          {/* Pivote central */}
+          <circle cx="100" cy="100" r="6" fill="#111827" />
+          {/* Valor de probabilidad */}
+          <text x="100" y="88" textAnchor="middle" className="fill-foreground text-2xl font-semibold">
+            {formatProbability(value)}
+          </text>
+          {/* Umbral */}
+          <text x="100" y="118" textAnchor="middle" className="fill-muted-foreground text-[11px]">
+            umbral {thresholdValue.toFixed(2)}
+          </text>
+        </svg>
+      </div>
     </section>
   );
 }

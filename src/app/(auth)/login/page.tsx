@@ -3,13 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import {
-  Activity,
   LockKeyhole,
   LogIn,
   Mail,
   Microscope,
-  ShieldCheck,
-  Sparkles,
   UserPlus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -39,12 +36,6 @@ import {
 import { cn } from "@/lib/utils";
 
 type AuthMode = "login" | "register";
-
-const SIGNALS = [
-  { label: "IVCM", value: "Confocal" },
-  { label: "IA", value: "ResNet-18" },
-  { label: "Flujo", value: "Clinico" },
-] as const;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -83,16 +74,14 @@ export default function LoginPage() {
   const isBusy = loginMutation.isPending || registerMutation.isPending;
 
   return (
-    <div className="auth-stage relative isolate min-h-screen overflow-hidden px-4 py-8 text-white sm:px-6 lg:px-8">
+    <div className="auth-stage relative isolate min-h-screen overflow-hidden text-white">
       <TechBackdrop />
 
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[minmax(360px,440px)_1fr]">
-        <Card
-          className="w-[min(22rem,calc(100vw-2rem))] min-w-0 justify-self-center rounded-lg border-white/40 bg-white/[0.94] py-5 text-foreground shadow-2xl shadow-cyan-950/30 backdrop-blur-xl sm:w-full sm:max-w-md"
-        >
-          <CardHeader className="gap-4 px-5 pb-1">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
+        <Card className="w-full max-w-[22rem] rounded-xl border-white/30 bg-white/[0.96] py-5 text-foreground shadow-2xl shadow-cyan-950/40 backdrop-blur-xl sm:max-w-sm">
+          <CardHeader className="gap-4 px-6 pb-1">
             <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+              <div className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
                 <Microscope className="size-6" aria-hidden="true" />
               </div>
               <div>
@@ -101,7 +90,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="grid rounded-lg border bg-muted/50 p-1 sm:grid-cols-2">
+            <div className="grid grid-cols-2 rounded-lg border bg-muted/50 p-1">
               <ModeButton active={mode === "login"} onClick={() => setMode("login")}>
                 <LogIn className="size-4" aria-hidden="true" />
                 Entrar
@@ -113,7 +102,7 @@ export default function LoginPage() {
             </div>
           </CardHeader>
 
-          <CardContent className="px-5">
+          <CardContent className="px-6">
             {mode === "login" ? (
               <form
                 className="grid gap-4"
@@ -122,7 +111,7 @@ export default function LoginPage() {
                 <div className="grid gap-1.5">
                   <Label htmlFor="email">Correo electronico</Label>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3 top-2 size-4 text-muted-foreground" />
+                    <Mail className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" />
                     <Input
                       id="email"
                       type="email"
@@ -142,7 +131,7 @@ export default function LoginPage() {
                 <div className="grid gap-1.5">
                   <Label htmlFor="password">Contrasena</Label>
                   <div className="relative">
-                    <LockKeyhole className="pointer-events-none absolute left-3 top-2 size-4 text-muted-foreground" />
+                    <LockKeyhole className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" />
                     <Input
                       id="password"
                       type="password"
@@ -249,61 +238,6 @@ export default function LoginPage() {
             )}
           </CardContent>
         </Card>
-
-        <section className="hidden min-h-[560px] flex-col justify-between lg:flex">
-          <div className="space-y-7">
-            <div className="inline-flex items-center gap-2 rounded-md border border-white/[0.15] bg-white/10 px-3 py-2 text-sm text-cyan-50 backdrop-blur">
-              <Sparkles className="size-4 text-emerald-300" aria-hidden="true" />
-              Laboratorio IVCM inteligente
-            </div>
-
-            <div className="max-w-2xl space-y-5">
-              <h1 className="text-5xl font-semibold leading-tight tracking-normal text-white">
-                Precision clinica con una interfaz mas viva.
-              </h1>
-              <p className="max-w-xl text-base leading-7 text-cyan-50/[0.78]">
-                Analisis de imagenes, biomarcadores y revision medica en un flujo visual
-                pensado para trabajo asistencial real.
-              </p>
-            </div>
-
-            <div className="grid max-w-xl grid-cols-3 gap-3">
-              {SIGNALS.map((signal) => (
-                <div
-                  key={signal.label}
-                  className="rounded-lg border border-white/[0.14] bg-white/[0.09] p-3 shadow-lg shadow-black/10 backdrop-blur"
-                >
-                  <p className="text-xs uppercase text-cyan-100/60">{signal.label}</p>
-                  <p className="mt-1 text-sm font-medium text-white">{signal.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-lg border border-white/[0.15] bg-black/[0.24] p-4 shadow-2xl shadow-cyan-950/30 backdrop-blur">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm font-medium text-white">
-                <Activity className="size-4 text-emerald-300" aria-hidden="true" />
-                Senal de procesamiento
-              </div>
-              <ShieldCheck className="size-4 text-cyan-200" aria-hidden="true" />
-            </div>
-            <div className="auth-signal-panel grid h-40 content-end gap-2 rounded-md border border-white/10 bg-cyan-950/20 p-4">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-2 rounded-full bg-cyan-100/20"
-                  style={{ width: `${48 + index * 11}%` }}
-                >
-                  <span
-                    className="block h-full rounded-full bg-linear-to-r from-emerald-300 via-cyan-200 to-white/90"
-                    style={{ animationDelay: `${index * 160}ms` }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );
@@ -321,7 +255,7 @@ function ModeButton({
   return (
     <button
       type="button"
-      aria-pressed={active}
+      aria-pressed={active ? "true" : "false"}
       className={cn(
         "inline-flex h-8 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors",
         active

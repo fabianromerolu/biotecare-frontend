@@ -191,7 +191,7 @@ export function ImageDetailClient({
 
       {showPrediction && prediction ? (
         <div className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
             <div data-tour-id="image-detail__probability-gauge">
               <ProbabilityGauge
                 probability={prediction.dry_eye_probability}

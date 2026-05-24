@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export function TopBar() {
   const pathname = usePathname();
   const router = useRouter();
   const clearSession = useAuthStore((state) => state.clearSession);
+  const queryClient = useQueryClient();
 
   const title =
     TITLES[pathname] ??
@@ -41,6 +43,7 @@ export function TopBar() {
             size="sm"
             data-tour-id="topbar__logout-button"
             onClick={() => {
+              queryClient.clear();
               clearSession();
               router.replace("/login");
             }}

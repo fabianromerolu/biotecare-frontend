@@ -10,13 +10,16 @@ import {
   listPatients,
   updatePatient,
 } from "@/lib/api/patients";
+import { useAuthStore } from "@/stores/authStore";
 import type { PatientCreateInput, PatientUpdateInput } from "@/types/api";
 
 export function usePatients() {
+  const userId = useAuthStore((state) => state.user?.id);
   return useQuery({
     queryKey: ["patients"],
     queryFn: listPatients,
     staleTime: 30_000,
+    enabled: Boolean(userId),
   });
 }
 

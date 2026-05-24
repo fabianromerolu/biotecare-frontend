@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -37,8 +37,18 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
 function AuthSessionWatcher({ queryClient }: { queryClient: QueryClient }) {
   const router = useRouter();
+  const token = useAuthStore((state) => state.token);
   const expiresAt = useAuthStore((state) => state.expiresAt);
   const clearSession = useAuthStore((state) => state.clearSession);
+
+  // Clear cache after navigation completes so no active observers trigger a re-fetch with null token.
+  const prevTokenRef = useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (prevTokenRef.current !== undefined && prevTokenRef.current !== null && token === null) {
+      queryClient.clear();
+    }
+    prevTokenRef.current = token;
+  }, [token, queryClient]);
 
   useEffect(() => {
     const handleExpired = () => {

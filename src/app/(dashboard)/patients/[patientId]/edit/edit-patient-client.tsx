@@ -23,7 +23,7 @@ export function EditPatientClient({ patientId }: { patientId: string }) {
       <div>
         <h2 className="text-xl font-semibold">Editar paciente</h2>
         <p className="text-sm text-muted-foreground">
-          El codigo externo permanece inmutable por trazabilidad.
+          El código externo permanece inmutable por trazabilidad.
         </p>
       </div>
       <PatientForm

@@ -99,8 +99,8 @@ export function TourTooltip() {
       aria-modal="false"
       aria-label={currentStep.title}
       className={cn(
-        "fixed z-[100] rounded-xl border bg-popover p-4 text-popover-foreground shadow-xl",
-        "ring-1 ring-black/10",
+        "fixed z-100 rounded-xl border border-primary/20 bg-popover p-5 text-popover-foreground shadow-xl",
+        "ring-1 ring-primary/15",
         "animate-in fade-in-0 zoom-in-95 duration-150",
       )}
       style={{ top, left, width: tooltipWidth }}

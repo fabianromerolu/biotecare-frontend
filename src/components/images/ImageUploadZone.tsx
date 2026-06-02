@@ -1,15 +1,23 @@
 "use client";
 
-import { ImagePlus, UploadCloud, X } from "lucide-react";
+import { HelpCircle, ImagePlus, UploadCloud, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { MAX_UPLOAD_MB } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/lib/utils/formatters";
+import { blobToPreviewUrl } from "@/lib/utils/tiffDecoder";
 import type { EyeSide, UploadImageInput } from "@/types/api";
 
 const ACCEPTED_MIME = {
@@ -46,14 +54,14 @@ export function ImageUploadZone({
       setFile(null);
       return;
     }
-    if (previewUrl) {
+    if (previewUrl && previewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
-    const nextPreviewUrl = URL.createObjectURL(selected);
-    const image = new window.Image();
-    image.onload = () => setDimensions(`${image.naturalWidth} x ${image.naturalHeight} px`);
-    image.onerror = () => setDimensions("Vista previa no disponible");
-    image.src = nextPreviewUrl;
+    const nextPreviewUrl = await blobToPreviewUrl(new Blob([selected], { type: selected.type }));
+    const img = new window.Image();
+    img.onload = () => setDimensions(`${img.naturalWidth} x ${img.naturalHeight} px`);
+    img.onerror = () => setDimensions("Vista previa no disponible");
+    img.src = nextPreviewUrl;
     setError(null);
     setFile(selected);
     setPreviewUrl(nextPreviewUrl);
@@ -69,7 +77,7 @@ export function ImageUploadZone({
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -183,7 +191,10 @@ export function ImageUploadZone({
           </div>
         </fieldset>
         <div className="grid gap-2" data-tour-id="upload__z-depth-field">
-          <Label htmlFor="z_depth_um">Profundidad Z (um)</Label>
+          <div className="flex items-center gap-1">
+            <Label htmlFor="z_depth_um">Profundidad Z (μm)</Label>
+            <ZDepthInfoDialog />
+          </div>
           <Input
             id="z_depth_um"
             type="number"
@@ -209,6 +220,53 @@ export function ImageUploadZone({
         </Button>
       </div>
     </form>
+  );
+}
+
+function ZDepthInfoDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          className="rounded text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Información sobre Profundidad Z"
+        >
+          <HelpCircle className="size-3.5" aria-hidden="true" />
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Profundidad Z (μm)</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 text-sm">
+          <div className="space-y-1">
+            <p className="font-medium text-muted-foreground uppercase tracking-wide text-xs">Qué es</p>
+            <p>
+              El plano de enfoque de la imagen confocal expresado en micrómetros (μm). Los
+              microscopios confocales corneales capturan imágenes a diferentes profundidades de la
+              córnea — este valor indica a qué profundidad fue tomada la imagen.
+            </p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium text-muted-foreground uppercase tracking-wide text-xs">Ejemplo</p>
+            <p>
+              Un estudio típico captura planos entre 40 μm y 60 μm de profundidad corneal, donde se
+              encuentra el plexo nervioso subbasal. Si su microscopio registra{" "}
+              <span className="font-mono">Z = 52.3 μm</span>, introduzca ese valor.
+            </p>
+          </div>
+          <div className="space-y-1">
+            <p className="font-medium text-muted-foreground uppercase tracking-wide text-xs">¿Es obligatorio?</p>
+            <p>
+              No. Si su equipo no registra este dato o no lo tiene disponible, puede dejar el campo
+              vacío — no afecta al análisis de IA. Su valor mejora la trazabilidad clínica del
+              estudio longitudinal.
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

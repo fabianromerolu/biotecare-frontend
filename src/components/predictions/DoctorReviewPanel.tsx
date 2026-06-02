@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock3, XCircle } from "lucide-react";
+import { CheckCircle2, Clock3, Stethoscope, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -13,8 +13,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import type { PredictionRead } from "@/types/api";
 
 export function DoctorReviewPanel({
@@ -27,94 +25,105 @@ export function DoctorReviewPanel({
   onReview: (accepted: boolean) => void;
 }) {
   if (prediction.doctor_override === true) {
-    return (
-      <ReviewBox
-        title="Revisión completada"
-        badge={
-          <Badge className="border-emerald-700 bg-emerald-50 text-emerald-800" variant="outline">
-            <CheckCircle2 className="size-3.5" /> Aceptada
-          </Badge>
-        }
-        note="Predicción aceptada por el médico responsable. Queda registrada en el expediente clínico."
-      />
-    );
+    return <ReviewCompleted accepted />;
   }
-
   if (prediction.doctor_override === false) {
-    return (
-      <ReviewBox
-        title="Revisión completada"
-        badge={
-          <Badge className="border-amber-700 bg-amber-50 text-amber-800" variant="outline">
-            <XCircle className="size-3.5" /> Rechazada
-          </Badge>
-        }
-        note="Predicción rechazada por el médico responsable. Queda registrada en el expediente clínico."
-      />
-    );
+    return <ReviewCompleted accepted={false} />;
   }
 
   return (
     <section
-      className="flex h-full flex-col rounded-lg border bg-card p-4"
+      className="flex h-full flex-col overflow-hidden rounded-xl border shadow-sm"
       aria-labelledby="review-title"
     >
-      <div>
-        <h2 id="review-title" className="text-sm font-semibold">
-          Revisión médica
-        </h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Confirme su valoración clínica del resultado antes de cerrar el análisis.
+      {/* Cabecera — pendiente en ámbar */}
+      <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 p-4">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-orange-500 shadow-md shadow-amber-500/20">
+          <Stethoscope className="size-4 text-white" aria-hidden="true" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Supervisión médica
+          </p>
+          <div className="flex items-center gap-1.5">
+            <h2 id="review-title" className="text-sm font-bold text-amber-700">
+              Revisión pendiente
+            </h2>
+            <Clock3 className="size-3.5 text-amber-700" aria-hidden="true" />
+          </div>
+        </div>
+      </div>
+
+      {/* Cuerpo */}
+      <div className="flex flex-1 flex-col justify-between gap-4 bg-card p-4">
+        <p className="text-xs text-muted-foreground">
+          Confirme su valoración clínica del resultado. La decisión quedará registrada en el
+          expediente y no puede modificarse.
         </p>
-        <Badge className="mt-3 border-amber-700 bg-amber-50 text-amber-800" variant="outline">
-          <Clock3 className="size-3" /> Pendiente de revisión
-        </Badge>
+
+        <div className="space-y-2">
+          <ReviewAction
+            accepted
+            disabled={isPending}
+            label={isPending ? "Registrando…" : "Aceptar resultado"}
+            onConfirm={() => onReview(true)}
+          />
+          <ReviewAction
+            disabled={isPending}
+            label={isPending ? "Registrando…" : "Rechazar resultado"}
+            onConfirm={() => onReview(false)}
+          />
+        </div>
       </div>
-
-      <Separator className="my-4" />
-
-      <div className="flex flex-col gap-2">
-        <ReviewAction
-          accepted
-          disabled={isPending}
-          label={isPending ? "Registrando…" : "Aceptar resultado"}
-          onConfirm={() => onReview(true)}
-        />
-        <ReviewAction
-          disabled={isPending}
-          label={isPending ? "Registrando…" : "Rechazar resultado"}
-          onConfirm={() => onReview(false)}
-        />
-      </div>
-
-      <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-        La decisión quedará registrada en el expediente y no podrá modificarse.
-      </p>
     </section>
   );
 }
 
-function ReviewBox({
-  title,
-  badge,
-  note,
-}: {
-  title: string;
-  badge: React.ReactNode;
-  note: string;
-}) {
+function ReviewCompleted({ accepted }: { accepted: boolean }) {
   return (
     <section
-      className="flex h-full flex-col rounded-lg border bg-card p-4"
-      aria-labelledby="review-title"
+      className="flex h-full flex-col overflow-hidden rounded-xl border shadow-sm"
+      aria-labelledby="review-completed-title"
     >
-      <div className="flex items-start justify-between gap-3">
-        <h2 id="review-title" className="text-sm font-semibold">
-          {title}
-        </h2>
-        {badge}
+      <div
+        className={`flex items-center gap-3 border-b p-4 ${
+          accepted
+            ? "border-emerald-500/20 bg-emerald-500/10"
+            : "border-red-500/20 bg-red-500/10"
+        }`}
+      >
+        <div
+          className={`flex size-9 shrink-0 items-center justify-center rounded-xl shadow-md ${
+            accepted
+              ? "bg-linear-to-br from-emerald-400 to-teal-600 shadow-emerald-500/20"
+              : "bg-linear-to-br from-red-400 to-rose-600 shadow-red-500/20"
+          }`}
+        >
+          {accepted ? (
+            <CheckCircle2 className="size-4 text-white" aria-hidden="true" />
+          ) : (
+            <XCircle className="size-4 text-white" aria-hidden="true" />
+          )}
+        </div>
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Supervisión médica
+          </p>
+          <h2
+            id="review-completed-title"
+            className={`text-sm font-bold ${accepted ? "text-emerald-700" : "text-red-700"}`}
+          >
+            {accepted ? "Predicción aceptada" : "Predicción rechazada"}
+          </h2>
+        </div>
       </div>
-      <p className="mt-3 text-xs text-muted-foreground">{note}</p>
+      <div className="flex flex-1 items-center bg-card p-4">
+        <p className="text-xs text-muted-foreground">
+          {accepted
+            ? "El médico responsable ratificó el resultado. Queda registrado en el expediente clínico."
+            : "El médico responsable descartó el resultado. Queda registrado en el expediente clínico."}
+        </p>
+      </div>
     </section>
   );
 }
@@ -134,11 +143,19 @@ function ReviewAction({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant={accepted ? "default" : "outline"}
           disabled={disabled}
-          className="w-full justify-start gap-2"
+          className={`w-full justify-start gap-2 font-medium shadow-sm ${
+            accepted
+              ? "bg-linear-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700"
+              : "border border-red-500/30 bg-red-50 text-red-700 hover:bg-red-100"
+          }`}
+          variant="ghost"
         >
-          {accepted ? <CheckCircle2 className="size-4" /> : <XCircle className="size-4" />}
+          {accepted ? (
+            <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
+          ) : (
+            <XCircle className="size-4 shrink-0" aria-hidden="true" />
+          )}
           {label}
         </Button>
       </AlertDialogTrigger>

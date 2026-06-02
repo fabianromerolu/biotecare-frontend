@@ -10,6 +10,8 @@ import {
   getHeatmapBlob,
   getImage,
   getImageFileBlob,
+  getImagePrediction,
+  getPatientPrediction,
   listPatientImages,
   predictImage,
   reviewPrediction,
@@ -65,7 +67,7 @@ export function usePredictImage(patientId: string, imageId: string) {
       queryClient.invalidateQueries({ queryKey: ["images", imageId] });
       queryClient.invalidateQueries({ queryKey: ["images", imageId, "heatmap"] });
       queryClient.invalidateQueries({ queryKey: ["patients", patientId, "images"] });
-      toast.success("Analisis de IA completado.");
+      toast.success("Análisis de IA completado.");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
@@ -85,8 +87,10 @@ export function useHeatmap(imageId: string, enabled: boolean) {
     queryKey: ["images", imageId, "heatmap"],
     queryFn: () => getHeatmapBlob(imageId),
     enabled,
-    staleTime: 5 * 60_000,
-    retry: false,
+    staleTime: 10 * 60_000,
+    gcTime: 30 * 60_000,
+    retry: 1,
+    retryDelay: 2000,
   });
 }
 
@@ -96,7 +100,7 @@ export function useAggregatePatient(patientId: string) {
     mutationFn: (input: AggregatePatientInput) => aggregatePatient(patientId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patients", patientId] });
-      toast.success("Prediccion agregada creada.");
+      toast.success("Predicción agregada creada.");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
@@ -117,9 +121,29 @@ export function useReviewPrediction(imageId?: string) {
         cachePrediction(imageId, prediction);
         queryClient.invalidateQueries({ queryKey: ["images", imageId] });
       }
-      toast.success("Revision medica registrada.");
+      toast.success("Revisión médica registrada.");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useImagePrediction(imageId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["images", imageId, "prediction"],
+    queryFn: () => getImagePrediction(imageId),
+    enabled,
+    staleTime: 60_000,
+    retry: false,
+  });
+}
+
+export function usePatientPrediction(patientId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["patients", patientId, "prediction"],
+    queryFn: () => getPatientPrediction(patientId),
+    enabled,
+    staleTime: 60_000,
+    retry: false,
   });
 }
 

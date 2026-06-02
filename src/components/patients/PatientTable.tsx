@@ -24,15 +24,15 @@ export function PatientTable({
   imageMap: Record<string, ImageRead[] | undefined>;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
+    <div className="overflow-hidden rounded-lg border bg-card shadow-sm">
       <Table className="min-w-[760px]">
         <TableHeader>
           <TableRow>
-            <TableHead>Codigo externo</TableHead>
-            <TableHead>Ano nac.</TableHead>
+            <TableHead>Código externo</TableHead>
+            <TableHead>Año nac.</TableHead>
             <TableHead>Sexo</TableHead>
-            <TableHead>Fecha creacion</TableHead>
-            <TableHead>N imagenes</TableHead>
+            <TableHead>Fecha creación</TableHead>
+            <TableHead>N.º imágenes</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead className="w-12" />
           </TableRow>

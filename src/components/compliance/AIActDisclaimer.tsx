@@ -5,12 +5,12 @@ export function AIActDisclaimer() {
   return (
     <Alert className="border-amber-300 bg-amber-50 text-amber-950">
       <TriangleAlert className="size-4" aria-hidden="true" />
-      <AlertTitle>Supervision humana obligatoria</AlertTitle>
+      <AlertTitle>Supervisión humana obligatoria</AlertTitle>
       <AlertDescription>
-        El resultado generado por este sistema de inteligencia artificial es unicamente un soporte
-        para la decision clinica. El diagnostico final es responsabilidad exclusiva del medico. Este
-        sistema cumple con el Reglamento (UE) 2024/1689 del Parlamento Europeo (EU AI Act), Art. 14
-        - Supervision humana.
+        Biotecare es una herramienta de soporte diagnóstico basada en inteligencia artificial. Sus
+        resultados son orientativos y no constituyen un diagnóstico médico definitivo. La decisión
+        clínica final corresponde exclusivamente al médico responsable, quien debe revisar, aceptar
+        o rechazar cada predicción.
       </AlertDescription>
     </Alert>
   );

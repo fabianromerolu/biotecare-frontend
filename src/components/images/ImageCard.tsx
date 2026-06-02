@@ -2,27 +2,31 @@
 
 import { Eye, FileImage } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { ImageStatusBadge } from "@/components/images/ImageStatusBadge";
 import { Button } from "@/components/ui/button";
 import { useImageFile } from "@/hooks/useImages";
+import { blobToPreviewUrl } from "@/lib/utils/tiffDecoder";
 import { formatBytes, formatDateOnly } from "@/lib/utils/formatters";
 import type { ImageRead } from "@/types/api";
 
 export function ImageCard({ patientId, image }: { patientId: string; image: ImageRead }) {
   const fileQuery = useImageFile(image.id);
-  const previewUrl = useMemo(
-    () => (fileQuery.data ? URL.createObjectURL(fileQuery.data) : null),
-    [fileQuery.data],
-  );
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!fileQuery.data) return;
+    let objectUrl: string | null = null;
+    blobToPreviewUrl(fileQuery.data)
+      .then((url) => {
+        if (url.startsWith("blob:")) objectUrl = url;
+        setPreviewUrl(url);
+      })
+      .catch(() => setPreviewUrl(null));
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [previewUrl]);
+  }, [fileQuery.data]);
 
   return (
     <article className="rounded-lg border bg-card p-4">

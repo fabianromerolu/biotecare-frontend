@@ -84,3 +84,13 @@ export async function reviewPrediction(
   });
   return data;
 }
+
+export async function getImagePrediction(imageId: string): Promise<PredictionRead> {
+  const { data } = await apiClient.get<PredictionRead>(`/images/${imageId}/prediction`);
+  return data;
+}
+
+export async function getPatientPrediction(patientId: string): Promise<PredictionRead> {
+  const { data } = await apiClient.get<PredictionRead>(`/patients/${patientId}/prediction`);
+  return data;
+}

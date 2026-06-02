@@ -19,7 +19,7 @@ export function PatientStatusBadge({ images }: { images: ImageRead[] | undefined
   if (status === "predicted") {
     return (
       <Badge className="border-emerald-700 bg-emerald-50 text-emerald-800" variant="outline">
-        <CheckCircle2 /> Con prediccion
+        <CheckCircle2 /> Con predicción
       </Badge>
     );
   }

@@ -11,6 +11,7 @@ import { PatientTable } from "@/components/patients/PatientTable";
 import { getPatientUiStatus, type PatientUiStatus } from "@/components/patients/PatientStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -70,7 +71,7 @@ export default function PatientsPage() {
         <div>
           <h2 className="text-xl font-semibold">Pacientes</h2>
           <p className="text-sm text-muted-foreground">
-            Registros anonimizados vinculados al medico autenticado.
+            Registros anonimizados vinculados al médico autenticado.
           </p>
         </div>
         <Button asChild data-tour-id="patients__new-patient-button">
@@ -81,40 +82,49 @@ export default function PatientsPage() {
         </Button>
       </div>
 
-      <div className="grid gap-3 rounded-lg border bg-card p-4 md:grid-cols-[1fr_180px_220px]">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar codigo externo"
-            className="pl-9"
-            aria-label="Buscar codigo externo"
-            data-tour-id="patients__search-input"
-          />
+      <div className="grid gap-4 rounded-lg border bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,220px)_minmax(0,220px)]">
+        <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
+          <Label htmlFor="patient-search">Buscar paciente</Label>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" />
+            <Input
+              id="patient-search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Buscar código externo"
+              className="pl-9"
+              data-tour-id="patients__search-input"
+            />
+          </div>
         </div>
-        <Select value={sex} onValueChange={(value) => setSex(value as PatientSex | "all")}>
-          <SelectTrigger aria-label="Filtrar por sexo" data-tour-id="patients__sex-filter">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos los sexos</SelectItem>
-            <SelectItem value="F">Femenino</SelectItem>
-            <SelectItem value="M">Masculino</SelectItem>
-            <SelectItem value="O">Otro</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={status} onValueChange={(value) => setStatus(value as PatientUiStatus | "all")}>
-          <SelectTrigger aria-label="Filtrar por estado" data-tour-id="patients__status-filter">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos los estados</SelectItem>
-            <SelectItem value="empty">Sin analizar</SelectItem>
-            <SelectItem value="pending">Pendiente</SelectItem>
-            <SelectItem value="predicted">Con prediccion</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="space-y-1.5">
+          <Label>Sexo</Label>
+          <Select value={sex} onValueChange={(value) => setSex(value as PatientSex | "all")}>
+            <SelectTrigger aria-label="Filtrar por sexo" data-tour-id="patients__sex-filter">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los sexos</SelectItem>
+              <SelectItem value="F">Femenino</SelectItem>
+              <SelectItem value="M">Masculino</SelectItem>
+              <SelectItem value="O">Otro</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Estado</Label>
+          <Select value={status} onValueChange={(value) => setStatus(value as PatientUiStatus | "all")}>
+            <SelectTrigger aria-label="Filtrar por estado" data-tour-id="patients__status-filter">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los estados</SelectItem>
+              <SelectItem value="empty">Sin analizar</SelectItem>
+              <SelectItem value="pending">Pendiente</SelectItem>
+              <SelectItem value="predicted">Con predicción</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {patients.length === 0 ? (

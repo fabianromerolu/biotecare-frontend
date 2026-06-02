@@ -35,8 +35,6 @@ const GLOBAL_STEP_IDS = new Set([
   "__global_welcome",
   "sidebar__nav-patients",
   "sidebar__nav-model",
-  "topbar__session-badge",
-  "topbar__logout-button",
 ]);
 
 const RESERVED_PATIENT_PATHS = new Set(["new"]);
@@ -82,7 +80,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const buildSteps = useCallback(
     (forceGlobal = false): TourStep[] => {
       const includeGlobal = !tourStorage.isGlobalCompleted() || forceGlobal;
-      const fullJourney = forceGlobal || pathname === "/patients";
+      const fullJourney = forceGlobal;
       const matchedRoutes = fullJourney
         ? TOUR_ROUTES
         : TOUR_ROUTES.filter((route) => routeMatches(route, pathname));

@@ -12,7 +12,7 @@ export default function NewPatientPage() {
       <div>
         <h2 className="text-xl font-semibold">Nuevo paciente</h2>
         <p className="text-sm text-muted-foreground">
-          Usa un codigo externo anonimizado; no introduzcas nombres ni documentos.
+          Usa un código externo anonimizado; no introduzcas nombres ni documentos.
         </p>
       </div>
       <PatientForm

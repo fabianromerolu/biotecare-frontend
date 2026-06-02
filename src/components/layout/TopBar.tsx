@@ -19,10 +19,10 @@ export function TopBar() {
 
   const title =
     TITLES[pathname] ??
-    (pathname.startsWith("/patients") ? "Gestion clinica" : "Biotecare");
+    (pathname.startsWith("/patients") ? "Gestión clínica" : "Biotecare");
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b bg-background shadow-xs">
       <div className="flex h-16 items-center justify-between gap-3 px-4 pl-20 sm:px-6 lg:px-8 lg:pl-8">
         <div>
           <h1 className="text-base font-semibold text-foreground">{title}</h1>
@@ -31,7 +31,7 @@ export function TopBar() {
             data-tour-id="topbar__session-badge"
           >
             <ShieldCheck className="size-3.5 text-emerald-700" aria-hidden="true" />
-            Sesion clinica temporal
+            Sesión clínica temporal
           </p>
         </div>
         <div className="flex items-center gap-2">

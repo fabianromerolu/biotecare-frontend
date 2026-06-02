@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PatientCreateSchema = z.object({
-  external_code: z.string().trim().min(1, "El codigo externo es obligatorio.").max(64),
+  external_code: z.string().trim().min(1, "El código externo es obligatorio.").max(64),
   birth_year: z.coerce
     .number()
     .int()

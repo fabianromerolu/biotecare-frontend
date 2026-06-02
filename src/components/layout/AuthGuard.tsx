@@ -30,7 +30,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   if (!hydrated || !isSessionValid(token, expiresAt)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <LoadingSpinner label="Validando sesion" />
+        <LoadingSpinner label="Validando sesión" />
       </div>
     );
   }

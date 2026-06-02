@@ -87,7 +87,8 @@ export function LegalAcknowledgmentModal() {
           {/* AI Act */}
           <LegalSection icon={FileText} title="Reglamento UE de Inteligencia Artificial (EU AI Act 2024/1689)">
             <p>
-              Este sistema está clasificado como sistema de IA de alto riesgo en el ámbito sanitario.
+              Por su uso como soporte diagnóstico sanitario, este sistema puede clasificarse como
+              IA de alto riesgo.
               En cumplimiento del artículo 14, se garantiza la supervisión humana en todas las
               decisiones clínicas. Ninguna predicción del modelo se aplica de forma automática:
               el médico debe revisar y confirmar o rechazar cada resultado.
@@ -113,7 +114,7 @@ export function LegalAcknowledgmentModal() {
                 DNI ni datos identificativos directos.
               </li>
               <li className="list-disc">
-                Las imágenes IVCM y transcripciones se procesan localmente. No se transfieren a
+                Las imágenes IVCM se procesan localmente. No se transfieren a
                 servicios externos en la nube.
               </li>
               <li className="list-disc">

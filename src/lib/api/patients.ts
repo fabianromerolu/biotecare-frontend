@@ -27,6 +27,10 @@ export async function updatePatient(
   return data;
 }
 
+export async function deletePatient(patientId: string): Promise<void> {
+  await apiClient.delete(`/patients/${patientId}`);
+}
+
 function normalizePatientInput<T extends PatientCreateInput | PatientUpdateInput>(input: T) {
   return {
     ...input,

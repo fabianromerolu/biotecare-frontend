@@ -37,7 +37,7 @@ export function Sidebar() {
       <div className="fixed left-4 top-3 z-50 lg:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" aria-label="Abrir navegacion">
+            <Button variant="outline" size="icon" aria-label="Abrir navegación">
               <Menu />
             </Button>
           </SheetTrigger>
@@ -62,7 +62,7 @@ function SidebarContent({ pathname }: { pathname: string }) {
         </div>
         <div>
           <p className="text-sm font-semibold">{APP_NAME}</p>
-          <p className="text-xs text-sidebar-foreground/70">IVCM + IA clinica</p>
+          <p className="text-xs text-sidebar-foreground/70">IVCM + IA clínica</p>
         </div>
       </div>
       <nav className="flex flex-1 flex-col gap-1 px-3 py-4" aria-label="Principal">

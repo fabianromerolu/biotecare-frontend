@@ -23,7 +23,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <AuthSessionWatcher queryClient={queryClient} />
@@ -81,7 +81,7 @@ function AuthSessionWatcher({ queryClient }: { queryClient: QueryClient }) {
     if (warnIn > 0) {
       timers.push(
         window.setTimeout(() => {
-          toast.warning("Su sesion expirara en 5 minutos.");
+          toast.warning("Su sesión expirará en 5 minutos.");
         }, warnIn),
       );
     }
@@ -90,7 +90,7 @@ function AuthSessionWatcher({ queryClient }: { queryClient: QueryClient }) {
       window.setTimeout(() => {
         clearSession();
         queryClient.clear();
-        toast.info("Su sesion ha expirado.");
+        toast.info("Su sesión ha expirado.");
         router.replace("/login");
       }, expireIn),
     );

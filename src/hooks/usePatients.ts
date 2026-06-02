@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api/client";
 import {
   createPatient,
+  deletePatient,
   getPatient,
   listPatients,
   updatePatient,
@@ -57,6 +58,22 @@ export function useUpdatePatient(patientId: string) {
       queryClient.invalidateQueries({ queryKey: ["patients", patientId] });
       toast.success("Paciente actualizado.");
       router.push(`/patients/${patient.id}`);
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useDeletePatient(patientId: string) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => deletePatient(patientId),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["patients", patientId] });
+      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      toast.success("Paciente eliminado.");
+      router.push("/patients");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });

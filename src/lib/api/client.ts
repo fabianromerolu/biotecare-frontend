@@ -44,7 +44,7 @@ export function getApiErrorMessage(error: unknown): string {
       return detail;
     }
     if (error.response?.status === 413) {
-      return "El archivo supera el tamano permitido.";
+      return "El archivo supera el tamaño permitido.";
     }
     if (error.message) {
       return error.message;
@@ -53,5 +53,5 @@ export function getApiErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
-  return "Ocurrio un error inesperado.";
+  return "Ocurrió un error inesperado.";
 }

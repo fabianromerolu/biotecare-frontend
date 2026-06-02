@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Biotecare",
   description:
-    "Frontend clinico para deteccion temprana de ojo seco con imagenes IVCM.",
+    "Frontend clínico para detección temprana de ojo seco con imágenes IVCM.",
 };
 
 export default function RootLayout({

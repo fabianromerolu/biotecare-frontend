@@ -1,29 +1,35 @@
 "use client";
 
-import { ArrowLeft, Brain, Edit3, FileImage, UploadCloud } from "lucide-react";
+import { ArrowLeft, Brain, Edit3, FileImage, Trash2, UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { AIActDisclaimer } from "@/components/compliance/AIActDisclaimer";
-import { ImageCard } from "@/components/images/ImageCard";
 import { DoctorReviewPanel } from "@/components/predictions/DoctorReviewPanel";
+import { PatientTimeline } from "@/components/predictions/PatientTimeline";
 import { ProbabilityGauge } from "@/components/predictions/ProbabilityGauge";
 import { BiomarkersTable } from "@/components/predictions/BiomarkersTable";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorPanel } from "@/components/shared/ErrorPanel";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { formatDate, sexLabel } from "@/lib/utils/formatters";
-import { useAggregatePatient, usePatientImages, useReviewPrediction } from "@/hooks/useImages";
-import { usePatient } from "@/hooks/usePatients";
+import { useAggregatePatient, usePatientImages, usePatientPrediction, useReviewPrediction } from "@/hooks/useImages";
+import { useDeletePatient, usePatient } from "@/hooks/usePatients";
 import type { PredictionRead } from "@/types/api";
 
-// Parámetros fijos para máximo rendimiento del modelo
 const BEST_METHOD = "attention" as const;
 const BEST_THRESHOLD = 0.5;
 
@@ -32,10 +38,15 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
   const imagesQuery = usePatientImages(patientId);
   const aggregateMutation = useAggregatePatient(patientId);
   const reviewMutation = useReviewPrediction();
+  const deleteMutation = useDeletePatient(patientId);
   const [aggregatePrediction, setAggregatePrediction] = useState<PredictionRead | null>(null);
 
   const images = imagesQuery.data ?? [];
   const canAggregate = images.some((image) => image.status === "predicted");
+
+  const persistedPatientPrediction = usePatientPrediction(patientId, canAggregate && !aggregatePrediction);
+
+  const resolvedAggregatePrediction = aggregatePrediction ?? persistedPatientPrediction.data ?? null;
 
   if (patientQuery.isLoading || imagesQuery.isLoading) {
     return <LoadingSpinner label="Cargando paciente" />;
@@ -59,34 +70,61 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
       </div>
 
       {/* Información del paciente */}
-      <section className="rounded-lg border bg-card p-5">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+      <section className="overflow-hidden rounded-xl border shadow-sm">
+        <div className="flex flex-col justify-between gap-4 border-b border-primary/20 bg-primary/10 p-5 sm:flex-row sm:items-center">
           <div>
-            <p className="font-mono text-xs text-muted-foreground">{patient.id}</p>
-            <h2 className="mt-1 text-xl font-semibold">{patient.external_code}</h2>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Expediente clínico
+            </p>
+            <h2 className="text-xl font-bold text-foreground">{patient.external_code}</h2>
           </div>
-          <Button variant="outline" asChild>
-            <Link href={`/patients/${patient.id}/edit`}>
-              <Edit3 />
-              Editar
-            </Link>
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button variant="outline" asChild className="shrink-0">
+              <Link href={`/patients/${patient.id}/edit`}>
+                <Edit3 />
+                Editar
+              </Link>
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="shrink-0">
+                  <Trash2 />
+                  Eliminar
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogMedia className="bg-destructive/10 text-destructive">
+                    <Trash2 />
+                  </AlertDialogMedia>
+                  <AlertDialogTitle>Eliminar paciente</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Se eliminará el expediente {patient.external_code}, sus imágenes y sus análisis.
+                    Esta acción no se puede deshacer.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={deleteMutation.isPending}>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    variant="destructive"
+                    disabled={deleteMutation.isPending}
+                    onClick={() => deleteMutation.mutate()}
+                  >
+                    {deleteMutation.isPending ? "Eliminando..." : "Eliminar definitivamente"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
-        <div className="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 bg-card p-5 text-sm sm:grid-cols-3">
           <InfoItem label="Año nac.">{patient.birth_year ?? "No registrado"}</InfoItem>
           <InfoItem label="Sexo">{sexLabel(patient.sex)}</InfoItem>
-          <InfoItem label="Fecha creación">{formatDate(patient.created_at)}</InfoItem>
-          <InfoItem label="Doctor ID">
-            <span className="font-mono text-xs">{patient.doctor_id}</span>
-          </InfoItem>
+          <InfoItem label="Fecha registro">{formatDate(patient.created_at)}</InfoItem>
         </div>
       </section>
 
       {/* Imágenes IVCM */}
-      <div data-tour-id="patient-detail__ai-act-disclaimer">
-        <AIActDisclaimer />
-      </div>
-
       <section className="space-y-3" data-tour-id="patient-detail__images-section">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
@@ -100,7 +138,7 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
             </Link>
           </Button>
         </div>
-        {images.length === 0 ? (
+        {images.length === 0 && (
           <EmptyState
             icon={FileImage}
             title="Sin imágenes"
@@ -114,14 +152,13 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
               </Button>
             }
           />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {images.map((image) => (
-              <ImageCard key={image.id} patientId={patient.id} image={image} />
-            ))}
-          </div>
         )}
       </section>
+
+      {/* Línea de tiempo de evolución */}
+      {images.length > 0 && (
+        <PatientTimeline patientId={patient.id} images={images} />
+      )}
 
       {/* Análisis agregado del paciente */}
       <section className="space-y-4">
@@ -157,28 +194,33 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
           </CardContent>
         </Card>
 
-        {aggregatePrediction ? (
+        {resolvedAggregatePrediction ? (
           <div className="grid gap-4 xl:grid-cols-2">
             <ProbabilityGauge
-              probability={aggregatePrediction.dry_eye_probability}
-              threshold={aggregatePrediction.threshold}
+              probability={resolvedAggregatePrediction.dry_eye_probability}
+              threshold={resolvedAggregatePrediction.threshold}
             />
             <DoctorReviewPanel
-              prediction={aggregatePrediction}
+              prediction={resolvedAggregatePrediction}
               isPending={reviewMutation.isPending}
               onReview={(accepted) =>
                 reviewMutation.mutate(
-                  { predictionId: aggregatePrediction.id, doctorAccepted: accepted },
+                  { predictionId: resolvedAggregatePrediction.id, doctorAccepted: accepted },
                   { onSuccess: setAggregatePrediction },
                 )
               }
             />
             <div className="xl:col-span-2">
-              <BiomarkersTable biomarkers={aggregatePrediction.biomarkers} />
+              <BiomarkersTable biomarkers={resolvedAggregatePrediction.biomarkers} />
             </div>
           </div>
         ) : null}
       </section>
+
+      {/* Disclaimer EU AI Act — al final */}
+      <div data-tour-id="patient-detail__ai-act-disclaimer">
+        <AIActDisclaimer />
+      </div>
     </div>
   );
 }
@@ -186,8 +228,8 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
 function InfoItem({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 wrap-break-word font-medium">{children}</p>
+      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-1 wrap-break-word font-semibold">{children}</p>
     </div>
   );
 }

@@ -46,60 +46,59 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ── Paleta médica — azul clínico ─────────────────────────────────────────── */
+/* Biotecare - light clinical UI */
 :root {
-  /* Fondo general: blanco con toque azul muy sutil */
-  --background: oklch(0.982 0.006 220);
-  --foreground: oklch(0.16 0.030 235);
+  /* Surfaces */
+  --background: oklch(0.975 0.008 225);
+  --foreground: oklch(0.22 0.035 245);
 
-  /* Cards y popovers: blanco puro */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.030 235);
+  --card-foreground: oklch(0.22 0.035 245);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.030 235);
+  --popover-foreground: oklch(0.22 0.035 245);
 
-  /* Azul médico principal */
-  --primary: oklch(0.42 0.21 230);
+  /* Primary: calm medical blue */
+  --primary: oklch(0.46 0.16 242);
   --primary-foreground: oklch(0.99 0 0);
 
-  /* Secundario: azul muy claro para fondos secundarios */
-  --secondary: oklch(0.95 0.012 225);
-  --secondary-foreground: oklch(0.24 0.035 232);
+  /* Secondary surfaces */
+  --secondary: oklch(0.945 0.018 228);
+  --secondary-foreground: oklch(0.28 0.045 242);
 
-  /* Muted: gris-azulado suave */
-  --muted: oklch(0.94 0.008 220);
-  --muted-foreground: oklch(0.46 0.022 228);
+  /* Low-emphasis areas */
+  --muted: oklch(0.95 0.012 225);
+  --muted-foreground: oklch(0.46 0.03 240);
 
-  /* Accent: teal médico suave */
-  --accent: oklch(0.93 0.048 183);
-  --accent-foreground: oklch(0.22 0.04 188);
+  /* Hover and active states */
+  --accent: oklch(0.92 0.035 220);
+  --accent-foreground: oklch(0.27 0.065 242);
 
-  /* Destructivo: rojo clínico */
-  --destructive: oklch(0.54 0.22 27);
+  /* Clinical error */
+  --destructive: oklch(0.53 0.205 27);
 
-  /* Bordes e inputs */
-  --border: oklch(0.87 0.012 222);
-  --input: oklch(0.90 0.010 222);
-  --ring: oklch(0.55 0.19 230);
+  /* Visible, restrained borders */
+  --border: oklch(0.855 0.018 228);
+  --input: oklch(0.79 0.025 230);
+  --ring: oklch(0.55 0.16 242);
 
-  /* Charts: tonos médicos */
-  --chart-1: oklch(0.60 0.16 165);
-  --chart-2: oklch(0.53 0.19 27);
-  --chart-3: oklch(0.65 0.13 70);
-  --chart-4: oklch(0.47 0.12 230);
-  --chart-5: oklch(0.52 0.11 187);
+  /* Charts */
+  --chart-1: oklch(0.56 0.16 242);
+  --chart-2: oklch(0.58 0.16 160);
+  --chart-3: oklch(0.68 0.15 70);
+  --chart-4: oklch(0.59 0.18 25);
+  --chart-5: oklch(0.56 0.12 285);
 
   --radius: 0.6rem;
 
-  /* Sidebar: azul marino médico profundo */
-  --sidebar: oklch(0.19 0.070 238);
-  --sidebar-foreground: oklch(0.94 0.008 225);
-  --sidebar-primary: oklch(0.60 0.16 165);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.28 0.060 238);
-  --sidebar-accent-foreground: oklch(0.97 0.006 225);
-  --sidebar-border: oklch(0.32 0.048 240);
-  --sidebar-ring: oklch(0.60 0.16 165);
+  /* Sidebar: contained contrast block */
+  --sidebar: oklch(0.27 0.075 243);
+  --sidebar-foreground: oklch(0.97 0.008 225);
+  --sidebar-primary: oklch(0.78 0.12 205);
+  --sidebar-primary-foreground: oklch(0.21 0.045 243);
+  --sidebar-accent: oklch(0.37 0.075 240);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.38 0.062 240);
+  --sidebar-ring: oklch(0.78 0.12 205);
 }
 
 @layer base {
@@ -123,43 +122,43 @@
 
 .auth-stage {
   background:
-    linear-gradient(135deg, #07130f 0%, #092019 38%, #102a2d 72%, #ecfeff 140%);
+    linear-gradient(135deg, #f7fbff 0%, #edf7fb 44%, #e0f2f7 76%, #d6eef5 100%);
 }
 
 .app-shell {
   background:
-    linear-gradient(180deg, rgba(236, 254, 255, 0.72) 0%, rgba(255, 255, 255, 0) 34%),
-    linear-gradient(to right, rgba(2, 132, 199, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(5, 150, 105, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, #f3faff 0%, var(--background) 18rem),
+    linear-gradient(to right, rgba(14, 116, 144, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 116, 144, 0.03) 1px, transparent 1px),
     var(--background);
-  background-size: auto, 72px 72px, 72px 72px, auto;
+  background-size: auto, 80px 80px, 80px 80px, auto;
   background-attachment: fixed;
 }
 
 .auth-grid {
   background-image:
-    linear-gradient(to right, rgba(103, 232, 249, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(110, 231, 183, 0.10) 1px, transparent 1px);
+    linear-gradient(to right, rgba(14, 116, 144, 0.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(13, 148, 136, 0.08) 1px, transparent 1px);
   background-size: 64px 64px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
   animation: auth-grid-drift 10s linear infinite;
 }
 
 .auth-scan {
-  background: linear-gradient(105deg, transparent 0%, rgba(125, 211, 252, 0.24) 48%, transparent 100%);
-  filter: blur(18px);
+  background: linear-gradient(105deg, transparent 0%, rgba(14, 116, 144, 0.10) 48%, transparent 100%);
   transform: skewX(-18deg);
   animation: auth-scan 4s ease-in-out infinite;
 }
 
 .auth-circuit {
   position: relative;
-  border: 1px solid rgba(125, 211, 252, 0.16);
+  border: 1px solid rgba(14, 116, 144, 0.12);
   background-image:
-    linear-gradient(90deg, transparent 0 22%, rgba(103, 232, 249, 0.24) 22% 23%, transparent 23% 100%),
-    linear-gradient(0deg, transparent 0 34%, rgba(110, 231, 183, 0.20) 34% 35%, transparent 35% 100%),
-    linear-gradient(90deg, transparent 0 64%, rgba(255, 255, 255, 0.16) 64% 65%, transparent 65% 100%);
-  opacity: 0.78;
+    linear-gradient(90deg, transparent 0 22%, rgba(14, 116, 144, 0.14) 22% 23%, transparent 23% 100%),
+    linear-gradient(0deg, transparent 0 34%, rgba(13, 148, 136, 0.12) 34% 35%, transparent 35% 100%),
+    linear-gradient(90deg, transparent 0 64%, rgba(14, 116, 144, 0.10) 64% 65%, transparent 65% 100%);
+  opacity: 0.7;
   transform: rotate(-8deg);
 }
 
@@ -167,13 +166,13 @@
 .auth-circuit::after {
   content: "";
   position: absolute;
-  border: 1px solid rgba(110, 231, 183, 0.18);
+  border: 1px solid rgba(13, 148, 136, 0.12);
   inset: 18%;
 }
 
 .auth-circuit::after {
   inset: 34% 10% 12% 46%;
-  border-color: rgba(103, 232, 249, 0.22);
+  border-color: rgba(14, 116, 144, 0.16);
   animation: auth-circuit-pulse 2s ease-in-out infinite;
 }
 

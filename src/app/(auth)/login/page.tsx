@@ -59,7 +59,7 @@ export default function LoginPage() {
     mutationFn: ({ full_name, email, password }: RegisterInput) =>
       registerDoctor({ full_name, email, password }),
     onSuccess: (_user, values) => {
-      toast.success("Cuenta creada. Iniciando sesion.");
+      toast.success("Cuenta creada. Iniciando sesión.");
       loginMutation.mutate({ email: values.email, password: values.password });
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
@@ -74,11 +74,11 @@ export default function LoginPage() {
   const isBusy = loginMutation.isPending || registerMutation.isPending;
 
   return (
-    <div className="auth-stage relative isolate min-h-screen overflow-hidden text-white">
+    <div className="auth-stage relative isolate min-h-screen overflow-hidden text-foreground">
       <TechBackdrop />
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-        <Card className="w-full max-w-[22rem] rounded-xl border-white/30 bg-white/[0.96] py-5 text-foreground shadow-2xl shadow-cyan-950/40 backdrop-blur-xl sm:max-w-sm">
+      <div className="relative z-10 flex min-h-screen w-screen max-w-full items-center justify-center py-8">
+        <Card className="w-[calc(100vw-2rem)] max-w-sm shrink-0 rounded-xl border-border bg-card py-5 shadow-lg">
           <CardHeader className="gap-4 px-6 pb-1">
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
@@ -86,11 +86,11 @@ export default function LoginPage() {
               </div>
               <div>
                 <CardTitle className="text-lg font-semibold">{APP_NAME}</CardTitle>
-                <CardDescription>Acceso clinico seguro</CardDescription>
+                <CardDescription>Acceso clínico seguro</CardDescription>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 rounded-lg border bg-muted/50 p-1">
+            <div className="grid grid-cols-2 rounded-lg border border-border bg-muted p-1">
               <ModeButton active={mode === "login"} onClick={() => setMode("login")}>
                 <LogIn className="size-4" aria-hidden="true" />
                 Entrar
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 onSubmit={loginForm.handleSubmit((values) => loginMutation.mutate(values))}
               >
                 <div className="grid gap-1.5">
-                  <Label htmlFor="email">Correo electronico</Label>
+                  <Label htmlFor="email">Correo electrónico</Label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" />
                     <Input
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="grid gap-1.5">
-                  <Label htmlFor="password">Contrasena</Label>
+                  <Label htmlFor="password">Contraseña</Label>
                   <div className="relative">
                     <LockKeyhole className="pointer-events-none absolute left-3 top-2.5 size-4 text-muted-foreground" />
                     <Input
@@ -150,7 +150,7 @@ export default function LoginPage() {
 
                 {loginMutation.isError ? (
                   <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                    Credenciales incorrectas. Verifique su correo y contrasena.
+                    Credenciales incorrectas. Verifique su correo y contraseña.
                   </p>
                 ) : null}
 
@@ -182,7 +182,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="grid gap-1.5">
-                  <Label htmlFor="register_email">Correo electronico</Label>
+                  <Label htmlFor="register_email">Correo electrónico</Label>
                   <Input
                     id="register_email"
                     type="email"
@@ -199,7 +199,7 @@ export default function LoginPage() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="grid gap-1.5">
-                    <Label htmlFor="register_password">Contrasena</Label>
+                    <Label htmlFor="register_password">Contraseña</Label>
                     <Input
                       id="register_password"
                       type="password"
@@ -232,7 +232,7 @@ export default function LoginPage() {
 
                 <Button type="submit" disabled={isBusy} className="h-9 w-full">
                   {registerMutation.isPending ? <LockKeyhole /> : <UserPlus />}
-                  {registerMutation.isPending ? "Creando cuenta..." : "Crear cuenta clinica"}
+                  {registerMutation.isPending ? "Creando cuenta..." : "Crear cuenta clínica"}
                 </Button>
               </form>
             )}
@@ -259,8 +259,8 @@ function ModeButton({
       className={cn(
         "inline-flex h-8 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors",
         active
-          ? "bg-background text-foreground shadow-sm"
-          : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
+          ? "bg-accent text-foreground shadow-sm"
+          : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
       )}
       onClick={onClick}
     >
@@ -276,7 +276,7 @@ function TechBackdrop() {
       <div className="auth-scan absolute inset-y-0 left-[-20%] w-1/2" />
       <div className="auth-circuit absolute left-[6%] top-[12%] h-56 w-80" />
       <div className="auth-circuit auth-circuit-secondary absolute bottom-[8%] right-[8%] h-64 w-96" />
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-black/[0.45] to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-white/60 to-transparent" />
     </div>
   );
 }

@@ -55,7 +55,7 @@ export function PatientForm({
     >
       {mode === "create" ? (
         <div className="grid gap-2">
-          <Label htmlFor="external_code">Codigo externo anonimo</Label>
+          <Label htmlFor="external_code">Código externo anónimo</Label>
           <Input
             id="external_code"
             placeholder="HRT-2026-0042"
@@ -71,14 +71,14 @@ export function PatientForm({
         </div>
       ) : (
         <div className="grid gap-2">
-          <Label>Codigo externo anonimo</Label>
+          <Label>Código externo anónimo</Label>
           <Input value={patient?.external_code ?? ""} disabled />
         </div>
       )}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="grid gap-2">
-          <Label htmlFor="birth_year">Ano de nacimiento</Label>
+          <Label htmlFor="birth_year">Año de nacimiento</Label>
           <Input
             id="birth_year"
             type="number"

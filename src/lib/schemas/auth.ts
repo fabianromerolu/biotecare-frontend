@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const LoginSchema = z.object({
   email: z.string().email("Introduce un email valido."),
-  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres.").max(128),
+  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres.").max(128),
 });
 
 export type LoginInput = z.infer<typeof LoginSchema>;
@@ -17,12 +17,12 @@ export const RegisterSchema = z
     email: z.string().email("Introduce un email valido."),
     password: z
       .string()
-      .min(8, "La contrasena debe tener al menos 8 caracteres.")
+      .min(8, "La contraseña debe tener al menos 8 caracteres.")
       .max(128),
-    confirm_password: z.string().min(8, "Confirma la contrasena."),
+    confirm_password: z.string().min(8, "Confirma la contraseña."),
   })
   .refine((values) => values.password === values.confirm_password, {
-    message: "Las contrasenas no coinciden.",
+    message: "Las contraseñas no coinciden.",
     path: ["confirm_password"],
   });
 

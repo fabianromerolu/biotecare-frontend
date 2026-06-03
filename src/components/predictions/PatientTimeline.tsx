@@ -21,7 +21,7 @@ export function PatientTimeline({
   );
 
   return (
-    <section>
+    <section data-tour-id="patient-detail__timeline">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">

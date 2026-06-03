@@ -152,7 +152,7 @@ export function ImageUploadZone({
             <div>
               <p className="font-medium">Arrastra una imagen IVCM o selecciona un archivo</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                PNG, JPEG, TIFF o BMP · Maximo {MAX_UPLOAD_MB} MB
+                PNG, JPEG, TIFF o BMP · imagen IVCM/CCM en escala de grises · Máximo {MAX_UPLOAD_MB} MB
               </p>
             </div>
             <Button type="button" variant="outline" onClick={open}>

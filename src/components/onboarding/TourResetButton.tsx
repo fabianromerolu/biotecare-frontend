@@ -10,7 +10,7 @@ export function TourResetButton() {
 
   const handleReset = () => {
     tourStorage.resetAll();
-    startTour(true);
+    startTour(false);
   };
 
   return (

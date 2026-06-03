@@ -70,7 +70,10 @@ export function PatientDetailClient({ patientId }: { patientId: string }) {
       </div>
 
       {/* Información del paciente */}
-      <section className="overflow-hidden rounded-xl border shadow-sm">
+      <section
+        className="overflow-hidden rounded-xl border shadow-sm"
+        data-tour-id="patient-detail__summary-card"
+      >
         <div className="flex flex-col justify-between gap-4 border-b border-primary/20 bg-primary/10 p-5 sm:flex-row sm:items-center">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">

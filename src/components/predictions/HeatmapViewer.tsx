@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
+interface LoadedBlobImage {
+  blob: Blob;
+  image: HTMLImageElement | null;
+  error: boolean;
+}
+
 export function HeatmapViewer({
   heatmapBlob,
   originalImageBlob,
@@ -21,13 +27,20 @@ export function HeatmapViewer({
 }) {
   const [opacity, setOpacity] = useState(0.55);
   const [showOriginal, setShowOriginal] = useState(false);
-  const [imageElement, setImageElement] = useState<HTMLImageElement | null>(null);
-  const [imageError, setImageError] = useState(false);
+  const [originalImageState, setOriginalImageState] = useState<LoadedBlobImage | null>(null);
+  const [heatmapImageState, setHeatmapImageState] = useState<LoadedBlobImage | null>(null);
   const [naturalSize, setNaturalSize] = useState({ width: 640, height: 420 });
   const containerRef = useRef<HTMLDivElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const displayingOriginal = showOriginal || !heatmapBlob;
-  const activeBlob = displayingOriginal ? originalImageBlob : heatmapBlob;
+  const currentOriginalState =
+    originalImageState?.blob === originalImageBlob ? originalImageState : null;
+  const currentHeatmapState =
+    heatmapBlob && heatmapImageState?.blob === heatmapBlob ? heatmapImageState : null;
+  const originalImageElement = currentOriginalState?.image ?? null;
+  const heatmapImageElement = currentHeatmapState?.image ?? null;
+  const originalImageError = currentOriginalState?.error ?? false;
+  const heatmapImageError = currentHeatmapState?.error ?? false;
 
   // Track container width responsively
   useEffect(() => {
@@ -44,24 +57,44 @@ export function HeatmapViewer({
   }, []);
 
   useEffect(() => {
-    if (!activeBlob) return;
-    const url = URL.createObjectURL(activeBlob);
+    const url = URL.createObjectURL(originalImageBlob);
     const img = new window.Image();
     img.onload = () => {
       setNaturalSize({ width: img.naturalWidth || 640, height: img.naturalHeight || 420 });
-      setImageElement(img);
-      setImageError(false);
+      setOriginalImageState({ blob: originalImageBlob, image: img, error: false });
     };
     img.onerror = () => {
-      setImageElement(null);
-      setImageError(true);
+      setOriginalImageState({ blob: originalImageBlob, image: null, error: true });
     };
     img.src = url;
     return () => URL.revokeObjectURL(url);
-  }, [activeBlob]);
+  }, [originalImageBlob]);
+
+  useEffect(() => {
+    if (!heatmapBlob) return;
+    const url = URL.createObjectURL(heatmapBlob);
+    const img = new window.Image();
+    img.onload = () => {
+      setHeatmapImageState({ blob: heatmapBlob, image: img, error: false });
+    };
+    img.onerror = () => {
+      setHeatmapImageState({ blob: heatmapBlob, image: null, error: true });
+    };
+    img.src = url;
+    return () => URL.revokeObjectURL(url);
+  }, [heatmapBlob]);
 
   const ratio = naturalSize.height / naturalSize.width;
   const canvasHeight = canvasWidth > 0 ? Math.max(180, Math.round(canvasWidth * ratio)) : 0;
+  const viewerMessage = originalImageError
+    ? "No se pudo mostrar la imagen original."
+    : !originalImageElement
+      ? "Cargando imagen original..."
+      : !displayingOriginal && heatmapImageError
+        ? "No se pudo superponer el mapa de activación."
+        : !displayingOriginal && !heatmapImageElement
+          ? "Cargando mapa de activación..."
+          : null;
 
   return (
     <section className="rounded-lg border bg-card p-4" aria-labelledby="heatmap-title">
@@ -120,38 +153,36 @@ export function HeatmapViewer({
           >
             <Layer>
               <Rect x={0} y={0} width={canvasWidth} height={canvasHeight} fill="#101827" />
-              {imageElement ? (
+              {originalImageElement ? (
                 <KonvaImage
-                  image={imageElement}
+                  image={originalImageElement}
                   x={0}
                   y={0}
                   width={canvasWidth}
                   height={canvasHeight}
-                  opacity={displayingOriginal ? 1 : opacity}
+                  opacity={1}
                 />
-              ) : imageError ? (
+              ) : null}
+              {!displayingOriginal && heatmapImageElement ? (
+                <KonvaImage
+                  image={heatmapImageElement}
+                  x={0}
+                  y={0}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  opacity={opacity}
+                />
+              ) : null}
+              {viewerMessage ? (
                 <Text
                   x={24}
-                  y={canvasHeight / 2 - 18}
+                  y={originalImageElement ? 20 : canvasHeight / 2 - 18}
                   width={Math.max(0, canvasWidth - 48)}
                   align="center"
-                  fill="#FCA5A5"
-                  text={
-                    displayingOriginal
-                      ? "No se pudo mostrar la imagen original."
-                      : "No se pudo mostrar el mapa de activación. Vuelva a ejecutar el análisis."
-                  }
+                  fill={originalImageError || heatmapImageError ? "#FCA5A5" : "#CBD5E1"}
+                  text={viewerMessage}
                 />
-              ) : (
-                <Text
-                  x={0}
-                  y={canvasHeight / 2 - 8}
-                  width={canvasWidth}
-                  align="center"
-                  fill="#9CA3AF"
-                  text={displayingOriginal ? "Cargando imagen original…" : "Cargando mapa de activación…"}
-                />
-              )}
+              ) : null}
             </Layer>
           </Stage>
         )}

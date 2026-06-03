@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Brain,
   CalendarDays,
+  ChevronDown,
   CheckCircle2,
   FileImage,
   Loader2,
@@ -234,37 +235,66 @@ export function ImageDetailClient({
         </div>
       )}
 
-      {/* ── Mapa de activación ─────────────────────────────────────── */}
-      {imageFileQuery.isLoading && (
-        <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
-          <Loader2 className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true" />
-          <span className="text-foreground">Cargando imagen original…</span>
-        </div>
-      )}
-
-      {imageFileQuery.isError && (
-        <ErrorPanel message="No se pudo cargar la imagen original desde el almacenamiento." />
-      )}
-
-      {heatmapQuery.isLoading && image.status === "predicted" && (
-        <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
-          <Loader2 className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true" />
-          <span className="text-foreground">Cargando mapa de activación…</span>
-        </div>
-      )}
-
-      {heatmapQuery.isError && image.status === "predicted" && (
-        <ErrorPanel message="No se pudo cargar el mapa de activación Grad-CAM. Vuelva a ejecutar el análisis para regenerarlo." />
-      )}
-
-      {imageFileQuery.data && (
-        <div data-tour-id="image-detail__heatmap-viewer">
-          <HeatmapViewer
-            heatmapBlob={heatmapQuery.data}
-            originalImageBlob={imageFileQuery.data}
+      {/* ── Visor de imagen y mapa de activación ───────────────────── */}
+      <details
+        className="group overflow-hidden rounded-xl border bg-card shadow-sm"
+        data-tour-id="image-detail__visual-accordion"
+      >
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-primary/10 p-5 transition-colors hover:bg-primary/15">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[#00B4D8] to-cyan-600 shadow-md shadow-[#00B4D8]/20">
+              <FileImage className="size-4 text-white" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Visor comparativo
+              </p>
+              <h2 className="text-sm font-bold text-foreground">
+                Imagen original y mapa de activación
+              </h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Despliegue para revisar la imagen cargada, Grad-CAM y la mezcla por opacidad.
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            className="size-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+            aria-hidden="true"
           />
+        </summary>
+        <div className="space-y-4 border-t bg-background/60 p-4">
+          {imageFileQuery.isLoading && (
+            <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
+              <Loader2 className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true" />
+              <span className="text-foreground">Cargando imagen original...</span>
+            </div>
+          )}
+
+          {imageFileQuery.isError && (
+            <ErrorPanel message="No se pudo cargar la imagen original desde el almacenamiento." />
+          )}
+
+          {heatmapQuery.isLoading && image.status === "predicted" && (
+            <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
+              <Loader2 className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true" />
+              <span className="text-foreground">Cargando mapa de activación...</span>
+            </div>
+          )}
+
+          {heatmapQuery.isError && image.status === "predicted" && (
+            <ErrorPanel message="No se pudo cargar el mapa de activación Grad-CAM. Vuelva a ejecutar el análisis para regenerarlo." />
+          )}
+
+          {imageFileQuery.data && (
+            <div data-tour-id="image-detail__heatmap-viewer">
+              <HeatmapViewer
+                heatmapBlob={heatmapQuery.data}
+                originalImageBlob={imageFileQuery.data}
+              />
+            </div>
+          )}
         </div>
-      )}
+      </details>
 
       {/* ── Resultados del análisis ────────────────────────────────── */}
       {resolvedPrediction && (

@@ -199,4 +199,143 @@ export const TOUR_ROUTES: TourRoute[] = [
     ],
   },
 
+  // ── MÓDULO MODELO (/model) ────────────────────────────────────────────────
+  {
+    pathname: "/model",
+    matchMode: "exact",
+    steps: [
+      {
+        targetId: "__model_intro",
+        isModal: true,
+        title: "Módulo Modelo",
+        content:
+          "Este módulo le permite comprobar el estado operativo del sistema y entender cómo funciona el modelo de IA ResNet-18 que analiza las imágenes IVCM.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "model__refresh-button",
+        title: "Refrescar estado",
+        content:
+          "Pulse este botón para consultar en tiempo real si la API y la base de datos están disponibles. Hágalo antes de iniciar una sesión de análisis.",
+        placement: "bottom-start",
+        roles: ["all"],
+      },
+      {
+        targetId: "model__health-card",
+        title: "Estado de los servicios",
+        content:
+          "Muestra si la API y la base de datos responden correctamente. Si algún servicio aparece en rojo, espere unos minutos antes de ejecutar análisis.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "model__model-card",
+        title: "Modelo activo",
+        content:
+          "Indica la versión del modelo ResNet-18 en uso, la tarea que realiza (clasificación binaria) y los biomarcadores que calcula automáticamente.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "model__steps-section",
+        title: "El recorrido de una imagen",
+        content:
+          "Explica en cuatro pasos simples qué hace el sistema: recibe la imagen, busca patrones, genera el mapa Grad-CAM y espera la decisión del médico.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "model__result-card",
+        title: "Cómo leer el resultado",
+        content:
+          "Resume los tres conceptos clave del análisis: la probabilidad estimada, el mapa Grad-CAM y los biomarcadores morfológicos. Todos son complementarios, ninguno sustituye al juicio clínico.",
+        placement: "top",
+        roles: ["all"],
+      },
+    ],
+  },
+
+  // ── MÓDULO LEGAL (/legal) ─────────────────────────────────────────────────
+  {
+    pathname: "/legal",
+    matchMode: "exact",
+    steps: [
+      {
+        targetId: "__legal_intro",
+        isModal: true,
+        title: "Marco legal",
+        content:
+          "Este módulo documenta el cumplimiento normativo de Biotecare bajo la regulación española y europea: EU AI Act, RGPD, MDR, LOPDGDD y Ley 41/2002, entre otras.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "legal__summary-grid",
+        title: "Indicadores de cumplimiento",
+        content:
+          "Resumen rápido del estado jurídico del sistema: viabilidad, clasificación como IA de alto riesgo, tipo de datos tratados y fase actual del proyecto.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "legal__rules-section",
+        title: "Normas aplicables",
+        content:
+          "Fichas expandibles con cada norma relevante. Para cada una se indica qué regula, qué obliga a Biotecare y cuál es la autoridad competente.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "legal__compliance-matrix",
+        title: "Matriz de cumplimiento",
+        content:
+          "Lista los requisitos regulatorios con su estado actual: Implementado, Pendiente, Parcial o No aplica aún. Es el punto de referencia antes de avanzar a producción.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "legal__roadmap-section",
+        title: "Hoja de ruta regulatoria",
+        content:
+          "Divide las obligaciones en tres fases: antes de usar datos reales, antes del despliegue clínico y antes de comercializar. Identifica qué debe completarse en cada etapa.",
+        placement: "top",
+        roles: ["all"],
+      },
+    ],
+  },
+
+  // ── MANUAL DE USUARIO (/manual-usuario) ──────────────────────────────────
+  {
+    pathname: "/manual-usuario",
+    matchMode: "exact",
+    steps: [
+      {
+        targetId: "__manual_intro",
+        isModal: true,
+        title: "Manual de usuario",
+        content:
+          "Guía completa de uso de Biotecare. Encontrará instrucciones paso a paso para cada módulo del sistema, con capturas de la interfaz y advertencias clínicas relevantes.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "manual__sections",
+        title: "Guía interactiva",
+        content:
+          "Cada acordeón responde una pregunta concreta sobre el sistema. Al expandirlo verá los pasos detallados, notas importantes y una vista de la interfaz correspondiente.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "manual__pdf-section",
+        title: "Manual completo en PDF",
+        content:
+          "Puede previsualizar el documento completo y descargarlo como PDF para consulta sin conexión. El documento incluye todas las secciones con diagramas de interfaz anotados.",
+        placement: "top",
+        roles: ["all"],
+      },
+    ],
+  },
+
 ];

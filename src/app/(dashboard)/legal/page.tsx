@@ -63,19 +63,17 @@ const GLOSSARY = [
 export default function LegalPage() {
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
-        <div className="grid gap-5 bg-linear-to-br from-blue-50 to-cyan-50 p-6 lg:grid-cols-[1fr_auto] lg:items-center">
-          <div>
-            <Badge className="mb-3 border-blue-200 bg-white text-blue-800" variant="outline">España y Unión Europea</Badge>
-            <h1 className="text-2xl font-bold">Marco legal y cumplimiento normativo de Biotecare</h1>
-            <p className="mt-2 max-w-4xl text-sm leading-relaxed text-muted-foreground">Sistema de IA de soporte diagnóstico oftalmológico bajo regulación española y europea.</p>
-            <p className="mt-4 rounded-lg border border-blue-200 bg-white p-3 text-sm font-semibold text-blue-950">Biotecare no sustituye al médico. La decisión diagnóstica final siempre corresponde al profesional sanitario.</p>
-          </div>
-          <div className="flex size-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md"><Scale className="size-10" /></div>
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Scale className="size-5 text-primary" aria-hidden="true" />
+          <h1 className="text-2xl font-bold tracking-tight">Marco legal</h1>
         </div>
-      </section>
+        <p className="text-sm text-muted-foreground">
+          Cumplimiento normativo de Biotecare bajo regulación española y europea (EU AI Act, RGPD, MDR).
+        </p>
+      </div>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section data-tour-id="legal__summary-grid" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Summary icon={BadgeCheck} title="Viabilidad jurídica" value="Viable con condiciones" />
         <Summary icon={AlertTriangle} title="Clasificación probable" value="IA de alto riesgo" />
         <Summary icon={Lock} title="Datos tratados" value="Datos de salud" />
@@ -88,19 +86,19 @@ export default function LegalPage() {
         </div>
       </Section>
 
-      <Section title="Normas aplicables" description="Cada ficha resume qué regula la norma y qué implica para Biotecare.">
+      <Section data-tour-id="legal__rules-section" title="Normas aplicables" description="Cada ficha resume qué regula la norma y qué implica para Biotecare.">
         <div className="grid gap-3 lg:grid-cols-2">
           {RULES.map(([area, name, regulates, obligation, authority]) => <details key={name} className="group rounded-xl border bg-card p-4 shadow-sm"><summary className="cursor-pointer list-none"><div className="flex items-start justify-between gap-3"><div><Badge variant="secondary">{area}</Badge><h3 className="mt-2 font-semibold">{name}</h3><p className="mt-1 text-sm text-muted-foreground">{regulates}</p></div><CircleDot className="mt-1 size-4 shrink-0 text-primary" /></div></summary><div className="mt-4 grid gap-3 border-t pt-4 text-sm"><LegalFact label="Obligación para Biotecare" value={obligation} /><LegalFact label="Autoridad o referencia" value={authority} /></div></details>)}
         </div>
       </Section>
 
-      <Section title="Matriz de cumplimiento" description="Estado actual del prototipo y próximos compromisos regulatorios.">
+      <Section data-tour-id="legal__compliance-matrix" title="Matriz de cumplimiento" description="Estado actual del prototipo y próximos compromisos regulatorios.">
         <div className="grid gap-3 md:grid-cols-2">
           {COMPLIANCE.map(([status, title, description, reference]) => <div key={title} className="rounded-xl border bg-card p-4 shadow-sm"><StatusBadge status={status} /><h3 className="mt-3 font-semibold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{description}</p><p className="mt-3 text-xs font-medium text-primary">{reference}</p></div>)}
         </div>
       </Section>
 
-      <Section title="Hoja de ruta regulatoria" description="Qué debe completarse antes de avanzar a cada fase.">
+      <Section data-tour-id="legal__roadmap-section" title="Hoja de ruta regulatoria" description="Qué debe completarse antes de avanzar a cada fase.">
         <div className="grid gap-4 lg:grid-cols-3">
           {PHASES.map(([phase, title, actions], index) => <Card key={phase}><CardHeader><Badge className="w-fit" variant="secondary">{phase}</Badge><CardTitle>{title}</CardTitle></CardHeader><CardContent><ul className="space-y-2">{actions.map((action) => <li key={action} className="flex gap-2 text-sm text-muted-foreground"><CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />{action}</li>)}</ul>{index === 1 ? <p className="mt-4 rounded-lg bg-amber-50 p-3 text-xs font-medium text-amber-900">Plazo relevante del EU AI Act: agosto de 2026 para sistemas de alto riesgo del Anexo III.</p> : null}</CardContent></Card>)}
         </div>
@@ -121,7 +119,7 @@ export default function LegalPage() {
   );
 }
 
-function Section({ title, description, children }: { title: string; description: string; children: React.ReactNode }) { return <section><h2 className="text-xl font-semibold">{title}</h2><p className="mt-1 text-sm text-muted-foreground">{description}</p><div className="mt-4">{children}</div></section>; }
+function Section({ title, description, children, ...props }: { title: string; description: string; children: React.ReactNode } & React.HTMLAttributes<HTMLElement>) { return <section {...props}><h2 className="text-xl font-semibold">{title}</h2><p className="mt-1 text-sm text-muted-foreground">{description}</p><div className="mt-4">{children}</div></section>; }
 function Summary({ icon: Icon, title, value }: { icon: typeof Gavel; title: string; value: string }) { return <div className="rounded-xl border bg-card p-4 shadow-sm"><Icon className="size-5 text-primary" /><p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p><p className="mt-1 font-semibold">{value}</p></div>; }
 function LegalFact({ label, value }: { label: string; value: string }) { return <p><span className="font-semibold text-foreground">{label}: </span><span className="text-muted-foreground">{value}</span></p>; }
 function StatusBadge({ status }: { status: string }) { const classes = status === "Implementado" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : status === "Pendiente" ? "border-amber-200 bg-amber-50 text-amber-900" : status === "Parcial" ? "border-blue-200 bg-blue-50 text-blue-800" : "border-slate-200 bg-slate-50 text-slate-700"; return <Badge className={classes} variant="outline">{status}</Badge>; }

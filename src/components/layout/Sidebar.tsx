@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, BookOpen, Menu, Microscope, UsersRound } from "lucide-react";
+import { Activity, BookMarked, BookOpen, Menu, Microscope, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,15 @@ const NAV_ITEMS = [
   { href: "/patients", label: "Pacientes", icon: UsersRound },
   { href: "/model", label: "Modelo", icon: Activity },
   { href: "/legal", label: "Legal", icon: BookOpen },
+  { href: "/manual-usuario", label: "Manual", icon: BookMarked },
 ] as const;
+
+const TOUR_IDS: Record<string, string> = {
+  "/patients": "sidebar__nav-patients",
+  "/model": "sidebar__nav-model",
+  "/legal": "sidebar__nav-legal",
+  "/manual-usuario": "sidebar__nav-manual",
+};
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -73,13 +81,7 @@ function SidebarContent({ pathname }: { pathname: string }) {
             <Link
               key={item.href}
               href={item.href}
-              data-tour-id={
-                item.href === "/patients"
-                  ? "sidebar__nav-patients"
-                  : item.href === "/model"
-                  ? "sidebar__nav-model"
-                  : "sidebar__nav-legal"
-              }
+              data-tour-id={TOUR_IDS[item.href]}
               className={cn(
                 "flex h-10 items-center gap-3 rounded-md px-3 text-sm transition-colors",
                 active

@@ -52,33 +52,22 @@ export default function ModelPage() {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
-        <div className="grid gap-6 bg-linear-to-br from-blue-50 to-cyan-50 p-6 lg:grid-cols-[1fr_auto] lg:items-center">
-          <div>
-            <Badge className="mb-3 border-blue-200 bg-white text-blue-800" variant="outline">
-              Explicación sencilla del modelo
-            </Badge>
-            <h2 className="text-2xl font-bold text-foreground">Cómo funciona la inteligencia artificial</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-              Biotecare actúa como una segunda lectura visual. Analiza imágenes de microscopía confocal
-              corneal, estima la probabilidad de ojo seco y muestra qué zonas influyeron en el resultado.
-            </p>
-            <p className="mt-3 font-semibold text-blue-900">
-              No sustituye al médico: el resultado es orientativo y requiere supervisión humana.
-            </p>
-          </div>
-          <div className="flex size-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
-            <Microscope className="size-10" aria-hidden="true" />
-          </div>
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Microscope className="size-5 text-primary" aria-hidden="true" />
+          <h1 className="text-2xl font-bold tracking-tight">Modelo de IA</h1>
         </div>
-      </section>
+        <p className="text-sm text-muted-foreground">
+          Estado del sistema y explicación del modelo ResNet-18. El resultado es orientativo y requiere supervisión humana.
+        </p>
+      </div>
 
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h2 className="text-xl font-semibold">Estado técnico del sistema</h2>
           <p className="text-sm text-muted-foreground">API FastAPI, base de datos y modelo ResNet-18.</p>
         </div>
-        <Button variant="outline" onClick={() => { healthQuery.refetch(); modelQuery.refetch(); }}>
+        <Button variant="outline" data-tour-id="model__refresh-button" onClick={() => { healthQuery.refetch(); modelQuery.refetch(); }}>
           <RefreshCw />
           Refrescar estado
         </Button>
@@ -118,7 +107,7 @@ export default function ModelPage() {
         </Card>
       </div>
 
-      <section>
+      <section data-tour-id="model__steps-section">
         <h2 className="text-xl font-semibold">El recorrido de una imagen</h2>
         <p className="mt-1 text-sm text-muted-foreground">Cuatro pasos para entender el proceso sin conocimientos técnicos.</p>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -134,7 +123,7 @@ export default function ModelPage() {
         </div>
       </section>
 
-      <Card>
+      <Card data-tour-id="model__result-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Eye className="size-5 text-primary" />Cómo leer el resultado</CardTitle>
         </CardHeader>

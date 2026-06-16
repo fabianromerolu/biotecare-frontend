@@ -5,6 +5,7 @@ export type PredictionType = "image" | "patient";
 export type AggregationMethod = "mean" | "max" | "attention";
 export type PredictionLabel = "dry_eye" | "normal";
 export type EyeSide = "OD" | "OS";
+export type SubphenotypeRunStatus = "running" | "completed" | "failed";
 
 export interface Token {
   access_token: string;
@@ -82,6 +83,67 @@ export interface ModelInfoRead {
   biomarkers: string[];
 }
 
+export interface SubphenotypeQualityMetrics {
+  sharpness_laplacian?: number;
+  rms_contrast?: number;
+  saturation_percent?: number;
+  high_frequency_energy?: number;
+}
+
+export interface SubphenotypeRunRead {
+  id: string;
+  created_by_id: string;
+  status: SubphenotypeRunStatus;
+  n_images: number;
+  n_clusters: number;
+  pca_components: number;
+  use_gmm: boolean;
+  use_consensus: boolean;
+  random_seed: number;
+  configuration: Record<string, unknown>;
+  summary: {
+    cluster_distribution?: Record<string, number>;
+    quality_by_cluster?: Record<string, SubphenotypeQualityMetrics>;
+    quality_warning?: {
+      has_warning: boolean;
+      messages: string[];
+    };
+  } | null;
+  metrics: {
+    n_images?: number;
+    n_clusters?: number;
+    pca_components?: number;
+    pca_explained_variance_ratio?: number[];
+    ari_kmeans_gmm?: number | null;
+    ari_kmeans_consensus?: number | null;
+    quality_warning?: unknown;
+    embedding_model_version?: string;
+    analysis_scope?: string;
+    random_seed?: number;
+    [key: string]: unknown;
+  } | null;
+  error_message: string | null;
+  exploratory_disclaimer: string;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export interface SubphenotypeAssignmentRead {
+  id: string;
+  run_id: string;
+  image_id: string;
+  patient_id: string;
+  patient_external_code: string | null;
+  original_filename: string | null;
+  cluster_label: number;
+  gmm_cluster_label: number | null;
+  consensus_cluster_label: number | null;
+  pc1: number;
+  pc2: number;
+  quality_metrics: SubphenotypeQualityMetrics;
+  created_at: string;
+}
+
 export interface PatientCreateInput {
   external_code: string;
   birth_year?: number | null;
@@ -99,4 +161,13 @@ export interface UploadImageInput {
 export interface AggregatePatientInput {
   aggregation_method: AggregationMethod;
   threshold: number;
+}
+
+export interface SubphenotypeRunCreateInput {
+  patient_ids?: string[] | null;
+  n_clusters: number;
+  pca_components: number;
+  use_gmm: boolean;
+  use_consensus: boolean;
+  random_seed: number;
 }

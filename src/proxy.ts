@@ -10,15 +10,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/patients", request.url));
   }
 
-  if (!pathname.startsWith("/login") && !hasSessionMarker) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/patients/:path*", "/model/:path*", "/login"],
+  matcher: ["/patients/:path*", "/model/:path*", "/subfenotipos-ivcm/:path*", "/login"],
 };

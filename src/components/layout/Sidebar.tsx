@@ -1,6 +1,14 @@
 "use client";
 
-import { Activity, BookMarked, BookOpen, Menu, Microscope, UsersRound } from "lucide-react";
+import {
+  Activity,
+  BookMarked,
+  BookOpen,
+  FlaskConical,
+  Menu,
+  Microscope,
+  UsersRound,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,6 +25,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/patients", label: "Pacientes", icon: UsersRound },
   { href: "/model", label: "Modelo", icon: Activity },
+  { href: "/subfenotipos-ivcm", label: "Subfenotipos IVCM", icon: FlaskConical },
   { href: "/legal", label: "Legal", icon: BookOpen },
   { href: "/manual-usuario", label: "Manual", icon: BookMarked },
 ] as const;
@@ -24,6 +33,7 @@ const NAV_ITEMS = [
 const TOUR_IDS: Record<string, string> = {
   "/patients": "sidebar__nav-patients",
   "/model": "sidebar__nav-model",
+  "/subfenotipos-ivcm": "sidebar__nav-subfenotipos-ivcm",
   "/legal": "sidebar__nav-legal",
   "/manual-usuario": "sidebar__nav-manual",
 };

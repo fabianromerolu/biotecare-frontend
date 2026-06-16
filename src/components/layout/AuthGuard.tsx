@@ -10,11 +10,25 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((state) => state.token);
   const expiresAt = useAuthStore((state) => state.expiresAt);
   const clearSession = useAuthStore((state) => state.clearSession);
-  const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
-    return unsubscribe;
+    let active = true;
+    const markHydrated = () => {
+      if (active) {
+        setHydrated(true);
+      }
+    };
+    const unsubscribe = useAuthStore.persist.onFinishHydration(markHydrated);
+    if (useAuthStore.persist.hasHydrated()) {
+      queueMicrotask(markHydrated);
+    } else {
+      void useAuthStore.persist.rehydrate();
+    }
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

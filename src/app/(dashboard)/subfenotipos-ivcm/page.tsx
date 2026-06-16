@@ -1,13 +1,10 @@
-"use client";
+﻿"use client";
 
 import {
   Activity,
   AlertTriangle,
-  BookOpen,
   CircleDot,
   FlaskConical,
-  HelpCircle,
-  Info,
   Play,
   RefreshCw,
   Settings2,
@@ -18,14 +15,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -53,88 +42,6 @@ import type {
 } from "@/types/api";
 
 const CLUSTER_COLORS = ["#2563eb", "#16a34a", "#dc2626", "#9333ea", "#ea580c", "#0891b2"];
-
-const SUBPHENOTYPE_GUIDE_SECTIONS = [
-  {
-    title: "Que es Subfenotipos IVCM",
-    text:
-      "Subfenotipos IVCM es una capa exploratoria para agrupar imagenes IVCM y buscar subfenotipos visuales. No reemplaza el diagnostico clinico ni la prediccion supervisada de Biotecare.",
-    items: [
-      "Usa imagenes ya cargadas por el medico autenticado.",
-      "Extrae representaciones visuales con ResNet-18.",
-      "Agrupa patrones parecidos para investigacion y control de calidad.",
-    ],
-  },
-  {
-    title: "Como crear una corrida",
-    text:
-      "Una corrida procesa un conjunto de imagenes y guarda sus clusters en tablas separadas de las predicciones clinicas.",
-    items: [
-      "Selecciona pacientes o deja la seleccion vacia para usar todos.",
-      "Mantiene 3 clusters, PCA=2, GMM y consenso activos para la demo inicial.",
-      "Pulsa Ejecutar exploracion y espera a que termine el procesamiento.",
-    ],
-  },
-  {
-    title: "Como interpretar resultados",
-    text:
-      "Los clusters son grupos visuales, no clases diagnosticas. Sirven para revisar similitudes, calidad de imagen y posibles subgrupos que ameriten estudio posterior.",
-    items: [
-      "PCA muestra cada imagen en dos ejes para ver separacion visual entre grupos.",
-      "La tabla indica a que cluster quedo asignada cada imagen.",
-      "La distribucion muestra si un cluster domina o si hay subgrupos pequenos.",
-    ],
-  },
-  {
-    title: "Limitaciones clinicas",
-    text:
-      "Subfenotipos IVCM no debe usarse para aceptar, rechazar o modificar diagnosticos. Su salida debe leerse como evidencia exploratoria.",
-    items: [
-      "No genera Prediction ni doctor_override.",
-      "No sustituye Grad-CAM, biomarcadores ni revision medica.",
-      "Todo hallazgo debe validarse contra etiquetas clinicas o biomarcadores reales.",
-    ],
-  },
-] as const;
-
-const SUBPHENOTYPE_TERMS = [
-  {
-    term: "Cluster",
-    definition: "Grupo de imagenes visualmente similares segun sus embeddings.",
-  },
-  {
-    term: "PCA",
-    definition: "Reduccion de dimension para visualizar patrones en dos ejes.",
-  },
-  {
-    term: "GMM",
-    definition: "Modelo probabilistico alternativo para comparar estabilidad de clusters.",
-  },
-  {
-    term: "Consensus clustering",
-    definition: "Agrupacion repetida que mide si la estructura se mantiene al re-muestrear.",
-  },
-  {
-    term: "ARI",
-    definition: "Indice de acuerdo entre dos particiones; 1.000 indica acuerdo perfecto.",
-  },
-  {
-    term: "Nitidez",
-    definition: "Varianza Laplaciana; valores bajos sugieren desenfoque o poco detalle util.",
-  },
-  {
-    term: "Contraste",
-    definition: "Contraste RMS de intensidades; ayuda a detectar imagenes planas o con baja separacion visual.",
-  },
-  {
-    term: "Saturacion",
-    definition: "Proporcion de pixeles quemados o negros; valores altos alertan sobre adquisicion deficiente.",
-  },
-  {
-    term: "Energia de alta frecuencia",
-    definition: "Contenido de bordes y textura fina; puede bajar con desenfoque o ruido de captura.",
-  },
-] as const;
 
 export default function SubphenotypePage() {
   const patientsQuery = usePatients();
@@ -179,7 +86,10 @@ export default function SubphenotypePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
+      <div
+        className="flex flex-col justify-between gap-3 md:flex-row md:items-start"
+        data-tour-id="subphenotypes__header"
+      >
         <div>
           <div className="mb-1 flex items-center gap-2">
             <FlaskConical className="size-5 text-primary" aria-hidden="true" />
@@ -190,9 +100,9 @@ export default function SubphenotypePage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <SubphenotypeGuideDialog />
           <Button
             variant="outline"
+            data-tour-id="subphenotypes__refresh-button"
             onClick={() => {
               runsQuery.refetch();
               if (activeRunId) {
@@ -206,7 +116,10 @@ export default function SubphenotypePage() {
         </div>
       </div>
 
-      <Alert className="border-amber-300 bg-amber-50 text-amber-950">
+      <Alert
+        className="border-amber-300 bg-amber-50 text-amber-950"
+        data-tour-id="subphenotypes__disclaimer"
+      >
         <AlertTriangle className="size-4" />
         <AlertTitle>Modulo exploratorio</AlertTitle>
         <AlertDescription>
@@ -214,7 +127,7 @@ export default function SubphenotypePage() {
         </AlertDescription>
       </Alert>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3" data-tour-id="subphenotypes__guide-hints">
         <GuideHint
           title="Minimo de imagenes"
           text="Necesitas al menos 6 imagenes IVCM del medico actual para crear una corrida."
@@ -230,7 +143,7 @@ export default function SubphenotypePage() {
       </div>
 
       <section className="grid gap-4 lg:grid-cols-[360px_1fr]">
-        <Card>
+        <Card data-tour-id="subphenotypes__new-run-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings2 className="size-4" />
@@ -262,7 +175,7 @@ export default function SubphenotypePage() {
               />
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3" data-tour-id="subphenotypes__patient-selector">
               <ToggleLine checked={useGmm} label="Comparar con GMM" onChange={setUseGmm} />
               <ToggleLine
                 checked={useConsensus}
@@ -305,14 +218,19 @@ export default function SubphenotypePage() {
               </p>
             </div>
 
-            <Button className="w-full" onClick={submitRun} disabled={createRun.isPending}>
+            <Button
+              className="w-full"
+              data-tour-id="subphenotypes__run-button"
+              onClick={submitRun}
+              disabled={createRun.isPending}
+            >
               {createRun.isPending ? <RefreshCw className="animate-spin" /> : <Play />}
               Ejecutar exploracion
             </Button>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-tour-id="subphenotypes__runs-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="size-4" />
@@ -362,7 +280,7 @@ export default function SubphenotypePage() {
             ) : (
               <div className="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
                 Aun no hay corridas de subfenotipos IVCM. Crea una corrida con al menos 6 imagenes IVCM
-                o abre Ver guía para revisar el flujo recomendado.
+                o use Ver guia en la barra superior para revisar el flujo recomendado.
               </div>
             )}
           </CardContent>
@@ -377,88 +295,6 @@ export default function SubphenotypePage() {
         />
       ) : null}
     </div>
-  );
-}
-
-function SubphenotypeGuideDialog() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="secondary">
-          <BookOpen />
-          Ver guía
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-[88vh] overflow-y-auto sm:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <FlaskConical className="size-5 text-primary" aria-hidden="true" />
-            Guia interna de Subfenotipos IVCM
-          </DialogTitle>
-          <DialogDescription>
-            Manual rapido para ejecutar, interpretar y presentar corridas no supervisadas.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Alert className="border-amber-300 bg-amber-50 text-amber-950">
-          <AlertTriangle className="size-4" />
-          <AlertTitle>Uso permitido</AlertTitle>
-          <AlertDescription>
-            Subfenotipos IVCM explora subfenotipos visuales. No emite diagnostico, no reemplaza al
-            medico y no modifica las predicciones clinicas de Biotecare.
-          </AlertDescription>
-        </Alert>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {SUBPHENOTYPE_GUIDE_SECTIONS.map((section) => (
-            <div key={section.title} className="rounded-lg border bg-card p-4">
-              <h3 className="flex items-center gap-2 font-semibold">
-                <HelpCircle className="size-4 text-primary" aria-hidden="true" />
-                {section.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{section.text}</p>
-              <ol className="mt-3 space-y-2">
-                {section.items.map((item, index) => (
-                  <li key={item} className="flex gap-2 text-sm text-muted-foreground">
-                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                      {index + 1}
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
-        </div>
-
-        <div className="rounded-lg border bg-muted/40 p-4">
-          <h3 className="font-semibold">Glosario de metricas y metodos</h3>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
-            {SUBPHENOTYPE_TERMS.map((term) => (
-              <div key={term.term} className="rounded-md bg-background p-3">
-                <p className="text-sm font-semibold">{term.term}</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  {term.definition}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950">
-          <h3 className="flex items-center gap-2 font-semibold">
-            <Info className="size-4" aria-hidden="true" />
-            Flujo recomendado para demo
-          </h3>
-          <p className="mt-2 text-sm leading-relaxed">
-            Presenta primero el flujo clinico de Biotecare. Luego abre Subfenotipos IVCM, ejecuta o
-            selecciona una corrida completada, muestra la separacion PCA, revisa ARI y
-            cierra explicando que la siguiente fase es correlacionar clusters con
-            biomarcadores y etiquetas clinicas reales.
-          </p>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }
 
@@ -531,12 +367,12 @@ function SubphenotypeRunDetail({
 }) {
   const warning = run.summary?.quality_warning;
   return (
-    <section className="space-y-4">
+    <section className="space-y-4" data-tour-id="subphenotypes__run-detail">
       <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div>
           <h2 className="text-xl font-semibold">Detalle de corrida</h2>
           <p className="text-sm text-muted-foreground">
-            {compactId(run.id)} · {run.exploratory_disclaimer}
+            {compactId(run.id)} Â· {run.exploratory_disclaimer}
           </p>
         </div>
         <SubphenotypeStatusBadge status={run.status} />
@@ -552,7 +388,7 @@ function SubphenotypeRunDetail({
         </Alert>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" data-tour-id="subphenotypes__metrics">
         <MetricCard label="Imagenes" value={String(run.n_images)} />
         <MetricCard label="Clusters" value={String(run.n_clusters)} />
         <MetricCard label="ARI KMeans/GMM" value={formatMetric(run.metrics?.ari_kmeans_gmm)} />
@@ -563,7 +399,7 @@ function SubphenotypeRunDetail({
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_420px]">
-        <Card>
+        <Card data-tour-id="subphenotypes__pca-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CircleDot className="size-4" />
@@ -579,7 +415,7 @@ function SubphenotypeRunDetail({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-tour-id="subphenotypes__distribution-card">
           <CardHeader>
             <CardTitle>Distribucion</CardTitle>
           </CardHeader>
@@ -589,7 +425,7 @@ function SubphenotypeRunDetail({
         </Card>
       </div>
 
-      <Card>
+      <Card data-tour-id="subphenotypes__assignments-table">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Table2 className="size-4" />
@@ -672,7 +508,7 @@ function ClusterDistribution({ run }: { run: SubphenotypeRunRead }) {
             <div className="flex items-center justify-between gap-3 text-sm">
               <ClusterBadge cluster={Number(cluster)} />
               <span className="font-mono text-xs text-muted-foreground">
-                {count} imagenes · {percent}%
+                {count} imagenes Â· {percent}%
               </span>
             </div>
             <div className="h-2 rounded-md bg-muted">

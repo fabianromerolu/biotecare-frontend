@@ -257,6 +257,103 @@ export const TOUR_ROUTES: TourRoute[] = [
   },
 
   // ── MÓDULO LEGAL (/legal) ─────────────────────────────────────────────────
+  // Subfenotipos IVCM (/subfenotipos-ivcm)
+  {
+    pathname: "/subfenotipos-ivcm",
+    matchMode: "exact",
+    steps: [
+      {
+        targetId: "__subphenotypes_intro",
+        isModal: true,
+        title: "Subfenotipos IVCM",
+        content:
+          "Este modulo es una capa exploratoria no diagnostica. Agrupa imagenes IVCM para buscar subfenotipos visuales, revisar calidad de imagen y generar evidencia tecnica sin modificar las predicciones clinicas.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__header",
+        title: "Objetivo del modulo",
+        content:
+          "Use esta vista para explorar patrones visuales entre imagenes ya cargadas. Biotecare conserva el flujo clinico supervisado; este modulo solo investiga agrupamientos y calidad.",
+        placement: "bottom-start",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__disclaimer",
+        title: "Resultado no diagnostico",
+        content:
+          "Los clusters no son diagnosticos ni reemplazan la revision medica. Sirven para investigacion, control de calidad y descubrimiento de posibles subgrupos que deben validarse despues.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__new-run-card",
+        title: "Crear una corrida",
+        content:
+          "Configure el numero de clusters, componentes PCA, semilla reproducible y comparaciones opcionales con GMM y consenso. La configuracion por defecto sirve para la demo inicial.",
+        placement: "right",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__patient-selector",
+        title: "Seleccion de pacientes",
+        content:
+          "Puede marcar pacientes concretos o dejar la seleccion vacia para usar todas las imagenes disponibles del medico actual. Se requieren al menos 6 imagenes IVCM.",
+        placement: "right",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__run-button",
+        title: "Ejecutar exploracion",
+        content:
+          "Este boton lanza el procesamiento. La corrida calcula embeddings, PCA, KMeans, GMM opcional, consenso opcional, ARI y metricas de calidad por imagen.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__runs-card",
+        title: "Corridas guardadas",
+        content:
+          "Aqui se listan las exploraciones previas. Cada corrida conserva estado, fecha, numero de imagenes, clusters y un boton para ver su detalle sin tocar Prediction.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__metrics",
+        title: "Metricas principales",
+        content:
+          "Revise imagenes procesadas, numero de clusters y ARI. ARI compara particiones: valores cercanos a 1 indican mayor acuerdo entre KMeans, GMM o consenso.",
+        placement: "bottom",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__pca-card",
+        title: "PCA por cluster",
+        content:
+          "El grafico ubica cada imagen en PC1 y PC2 coloreada por cluster. Es una vista exploratoria para ver separacion visual, no una frontera clinica.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__distribution-card",
+        title: "Distribucion de clusters",
+        content:
+          "La distribucion ayuda a detectar grupos dominantes o subgrupos pequenos. Si un cluster coincide con baja calidad, se debe interpretar con cautela.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__assignments-table",
+        title: "Asignaciones por imagen",
+        content:
+          "La tabla muestra paciente, archivo, cluster, PC1, PC2, nitidez, contraste y saturacion. Estos datos permiten auditar cada imagen y preparar analisis posteriores.",
+        placement: "top",
+        roles: ["all"],
+      },
+    ],
+  },
+
   {
     pathname: "/legal",
     matchMode: "exact",

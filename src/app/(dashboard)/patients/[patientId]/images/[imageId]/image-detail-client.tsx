@@ -266,12 +266,12 @@ export function ImageDetailClient({
           {imageFileQuery.isLoading && (
             <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
               <Loader2 className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true" />
-              <span className="text-foreground">Cargando imagen original...</span>
+              <span className="text-foreground">Cargando vista previa de la imagen...</span>
             </div>
           )}
 
           {imageFileQuery.isError && (
-            <ErrorPanel message="No se pudo cargar la imagen original desde el almacenamiento." />
+            <ErrorPanel message="No se pudo cargar la vista previa desde el almacenamiento. Verifique que el archivo original siga disponible." />
           )}
 
           {heatmapQuery.isLoading && image.status === "predicted" && (

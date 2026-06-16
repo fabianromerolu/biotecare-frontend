@@ -6,10 +6,22 @@ import UTIF from "utif";
  * Para el resto: usa URL.createObjectURL directamente.
  */
 export async function blobToPreviewUrl(blob: Blob): Promise<string> {
-  if (blob.type === "image/tiff" || blob.type === "image/x-tiff") {
+  if (await isTiffBlob(blob)) {
     return decodeTiff(blob);
   }
   return URL.createObjectURL(blob);
+}
+
+async function isTiffBlob(blob: Blob): Promise<boolean> {
+  if (blob.type === "image/tiff" || blob.type === "image/x-tiff") {
+    return true;
+  }
+
+  const bytes = new Uint8Array(await blob.slice(0, 4).arrayBuffer());
+  return (
+    (bytes[0] === 0x49 && bytes[1] === 0x49 && bytes[2] === 0x2a && bytes[3] === 0x00) ||
+    (bytes[0] === 0x4d && bytes[1] === 0x4d && bytes[2] === 0x00 && bytes[3] === 0x2a)
+  );
 }
 
 async function decodeTiff(blob: Blob): Promise<string> {

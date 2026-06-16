@@ -58,7 +58,7 @@ export async function getHeatmapBlob(imageId: string): Promise<Blob> {
 }
 
 export async function getImageFileBlob(imageId: string): Promise<Blob> {
-  const { data } = await apiClient.get<Blob>(`/images/${imageId}/file`, {
+  const { data } = await apiClient.get<Blob>(`/images/${imageId}/preview`, {
     responseType: "blob",
   });
   return data;

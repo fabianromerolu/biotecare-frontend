@@ -78,7 +78,8 @@ export function useImageFile(imageId: string) {
     queryKey: ["images", imageId, "file"],
     queryFn: () => getImageFileBlob(imageId),
     staleTime: 10 * 60_000,
-    retry: false,
+    retry: 1,
+    retryDelay: 1000,
   });
 }
 

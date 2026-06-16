@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { blobToPreviewUrl } from "@/lib/utils/tiffDecoder";
 
 interface LoadedBlobImage {
   blob: Blob;
@@ -57,17 +58,34 @@ export function HeatmapViewer({
   }, []);
 
   useEffect(() => {
-    const url = URL.createObjectURL(originalImageBlob);
+    let active = true;
+    let previewUrl: string | null = null;
     const img = new window.Image();
     img.onload = () => {
+      if (!active) return;
       setNaturalSize({ width: img.naturalWidth || 640, height: img.naturalHeight || 420 });
       setOriginalImageState({ blob: originalImageBlob, image: img, error: false });
     };
     img.onerror = () => {
+      if (!active) return;
       setOriginalImageState({ blob: originalImageBlob, image: null, error: true });
     };
-    img.src = url;
-    return () => URL.revokeObjectURL(url);
+    blobToPreviewUrl(originalImageBlob)
+      .then((url) => {
+        if (!active) {
+          if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+          return;
+        }
+        previewUrl = url;
+        img.src = url;
+      })
+      .catch(() => {
+        if (active) setOriginalImageState({ blob: originalImageBlob, image: null, error: true });
+      });
+    return () => {
+      active = false;
+      if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+    };
   }, [originalImageBlob]);
 
   useEffect(() => {

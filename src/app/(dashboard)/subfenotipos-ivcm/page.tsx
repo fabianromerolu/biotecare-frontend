@@ -293,8 +293,80 @@ export default function SubphenotypePage() {
           assignments={assignmentsQuery.data ?? []}
           loadingAssignments={assignmentsQuery.isLoading}
         />
-      ) : null}
+      ) : (
+        <SubphenotypeResultsGuidePlaceholder />
+      )}
     </div>
+  );
+}
+
+function SubphenotypeResultsGuidePlaceholder() {
+  return (
+    <section className="space-y-4" data-tour-id="subphenotypes__run-detail">
+      <div>
+        <h2 className="text-xl font-semibold">Vista de resultados</h2>
+        <p className="text-sm text-muted-foreground">
+          Al crear o seleccionar una corrida, esta zona mostrara las metricas, el PCA, la
+          distribucion de clusters y la tabla de imagenes asignadas.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" data-tour-id="subphenotypes__metrics">
+        <MetricCard label="Imagenes" value="-" />
+        <MetricCard label="Clusters" value="-" />
+        <MetricCard label="ARI KMeans/GMM" value="-" />
+        <MetricCard label="ARI consenso" value="-" />
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-[1fr_420px]">
+        <Card data-tour-id="subphenotypes__pca-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CircleDot className="size-4" />
+              PCA por cluster
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex aspect-[16/9] min-h-72 items-center justify-center rounded-md border border-dashed text-center text-sm text-muted-foreground">
+              Ejecute una corrida para ver PC1 y PC2 coloreados por cluster.
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card data-tour-id="subphenotypes__distribution-card">
+          <CardHeader>
+            <CardTitle>Distribucion</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {[0, 1, 2].map((cluster) => (
+                <div key={cluster} className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <ClusterBadge cluster={cluster} />
+                    <span className="font-mono text-xs text-muted-foreground">pendiente</span>
+                  </div>
+                  <div className="h-2 rounded-md bg-muted" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card data-tour-id="subphenotypes__assignments-table">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Table2 className="size-4" />
+            Imagenes asignadas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
+            Las asignaciones apareceran aqui despues de completar una exploracion.
+          </div>
+        </CardContent>
+      </Card>
+    </section>
   );
 }
 

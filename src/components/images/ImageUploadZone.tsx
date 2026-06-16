@@ -22,9 +22,14 @@ import type { EyeSide, UploadImageInput } from "@/types/api";
 
 const ACCEPTED_MIME = {
   "image/png": [".png"],
-  "image/jpeg": [".jpg", ".jpeg"],
+  "image/jpeg": [".jpg", ".jpeg", ".jfif"],
+  "image/pjpeg": [".jpg", ".jpeg", ".jfif"],
   "image/tiff": [".tif", ".tiff"],
+  "image/x-tiff": [".tif", ".tiff"],
   "image/bmp": [".bmp"],
+  "image/x-ms-bmp": [".bmp"],
+  "image/x-windows-bmp": [".bmp"],
+  "application/octet-stream": [".png", ".jpg", ".jpeg", ".jfif", ".tif", ".tiff", ".bmp"],
 };
 
 export function ImageUploadZone({
@@ -57,7 +62,12 @@ export function ImageUploadZone({
     if (previewUrl && previewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
-    const nextPreviewUrl = await blobToPreviewUrl(new Blob([selected], { type: selected.type }));
+    let nextPreviewUrl: string;
+    try {
+      nextPreviewUrl = await blobToPreviewUrl(selected);
+    } catch {
+      nextPreviewUrl = URL.createObjectURL(selected);
+    }
     const img = new window.Image();
     img.onload = () => setDimensions(`${img.naturalWidth} x ${img.naturalHeight} px`);
     img.onerror = () => setDimensions("Vista previa no disponible");
@@ -73,6 +83,10 @@ export function ImageUploadZone({
     noClick: true,
     noKeyboard: true,
     onDrop,
+    onDropRejected: () => {
+      setError("Selecciona una imagen PNG, JPEG/JFIF, TIFF o BMP valida.");
+      setFile(null);
+    },
   });
 
   useEffect(() => {
@@ -283,7 +297,7 @@ async function validateImageFile(file: File): Promise<string | null> {
     isBmp(bytes);
 
   if (!valid) {
-    return "El tipo real del archivo no coincide con PNG, JPEG, TIFF o BMP.";
+    return "El tipo real del archivo no coincide con PNG, JPEG/JFIF, TIFF o BMP.";
   }
   return null;
 }

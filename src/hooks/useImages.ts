@@ -17,7 +17,7 @@ import {
   reviewPrediction,
   uploadImage,
 } from "@/lib/api/images";
-import type { AggregatePatientInput, PredictionRead, UploadImageInput } from "@/types/api";
+import type { AggregatePatientInput, ImageRead, PredictionRead, UploadImagesInput } from "@/types/api";
 
 export function usePatientImages(patientId: string, enabled = true) {
   return useQuery({
@@ -41,13 +41,39 @@ export function useImageUpload(patientId: string) {
   const [progress, setProgress] = useState(0);
 
   const mutation = useMutation({
-    mutationFn: (input: UploadImageInput) => uploadImage(patientId, input, setProgress),
+    mutationFn: async (input: UploadImagesInput) => {
+      const uploaded: ImageRead[] = [];
+      const total = input.files.length;
+      for (const [index, file] of input.files.entries()) {
+        const image = await uploadImage(
+          patientId,
+          {
+            file,
+            eye: input.eye,
+            z_depth_um: input.z_depth_um,
+          },
+          (fileProgress) => {
+            const completed = index / total;
+            const current = fileProgress / 100 / total;
+            setProgress(Math.round((completed + current) * 100));
+          },
+        );
+        uploaded.push(image);
+      }
+      return uploaded;
+    },
     onMutate: () => setProgress(0),
-    onSuccess: (image) => {
+    onSuccess: (images) => {
       setProgress(100);
       queryClient.invalidateQueries({ queryKey: ["patients", patientId, "images"] });
-      toast.success("Imagen cargada.");
-      router.push(`/patients/${patientId}/images/${image.id}`);
+      toast.success(
+        images.length === 1 ? "Imagen cargada." : `${images.length} imagenes cargadas.`,
+      );
+      if (images.length === 1 && images[0]) {
+        router.push(`/patients/${patientId}/images/${images[0].id}`);
+        return;
+      }
+      router.push(`/patients/${patientId}`);
     },
     onError: (error) => {
       setProgress(0);

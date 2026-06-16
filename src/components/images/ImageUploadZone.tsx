@@ -18,7 +18,7 @@ import { MAX_UPLOAD_MB } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { formatBytes } from "@/lib/utils/formatters";
 import { blobToPreviewUrl } from "@/lib/utils/tiffDecoder";
-import type { EyeSide, UploadImageInput } from "@/types/api";
+import type { EyeSide, UploadImagesInput } from "@/types/api";
 
 const ACCEPTED_MIME = {
   "image/png": [".png"],
@@ -39,53 +39,69 @@ export function ImageUploadZone({
 }: {
   progress: number;
   isPending: boolean;
-  onSubmit: (input: UploadImageInput) => void;
+  onSubmit: (input: UploadImagesInput) => void;
 }) {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [dimensions, setDimensions] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState<string | null>(null);
   const [eye, setEye] = useState<EyeSide | null>(null);
   const [zDepth, setZDepth] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const onDrop = async (acceptedFiles: File[]) => {
-    const selected = acceptedFiles[0];
-    if (!selected) {
-      return;
-    }
-    const validationError = await validateImageFile(selected);
-    if (validationError) {
-      setError(validationError);
-      setFile(null);
-      return;
-    }
+  async function setPreviewFromFile(selected: File | undefined) {
     if (previewUrl && previewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
+    if (!selected) {
+      setPreviewUrl(null);
+      setPreviewName(null);
+      return;
+    }
+
     let nextPreviewUrl: string;
     try {
       nextPreviewUrl = await blobToPreviewUrl(selected);
     } catch {
       nextPreviewUrl = URL.createObjectURL(selected);
     }
-    const img = new window.Image();
-    img.onload = () => setDimensions(`${img.naturalWidth} x ${img.naturalHeight} px`);
-    img.onerror = () => setDimensions("Vista previa no disponible");
-    img.src = nextPreviewUrl;
-    setError(null);
-    setFile(selected);
     setPreviewUrl(nextPreviewUrl);
+    setPreviewName(selected.name);
+  }
+
+  const onDrop = async (acceptedFiles: File[]) => {
+    if (!acceptedFiles.length) return;
+
+    const validFiles: File[] = [];
+    const invalidMessages: string[] = [];
+    for (const selected of acceptedFiles) {
+      const validationError = await validateImageFile(selected);
+      if (validationError) {
+        invalidMessages.push(`${selected.name}: ${validationError}`);
+      } else {
+        validFiles.push(selected);
+      }
+    }
+
+    if (!validFiles.length) {
+      setError(invalidMessages[0] ?? "Selecciona al menos una imagen valida.");
+      return;
+    }
+
+    setFiles((current) => [...current, ...validFiles]);
+    setError(invalidMessages.length ? invalidMessages.join(" ") : null);
+    if (!previewUrl) {
+      await setPreviewFromFile(validFiles[0]);
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     accept: ACCEPTED_MIME,
-    maxFiles: 1,
+    multiple: true,
     noClick: true,
     noKeyboard: true,
     onDrop,
     onDropRejected: () => {
-      setError("Selecciona una imagen PNG, JPEG/JFIF, TIFF o BMP valida.");
-      setFile(null);
+      setError("Selecciona imagenes PNG, JPEG/JFIF, TIFF o BMP validas.");
     },
   });
 
@@ -97,17 +113,38 @@ export function ImageUploadZone({
     };
   }, [previewUrl]);
 
+  function removeFile(index: number) {
+    setFiles((current) => {
+      const removed = current[index];
+      const next = current.filter((_, itemIndex) => itemIndex !== index);
+      if (removed?.name === previewName) {
+        void setPreviewFromFile(next[0]);
+      }
+      return next;
+    });
+  }
+
+  function clearFiles() {
+    if (previewUrl && previewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setFiles([]);
+    setPreviewUrl(null);
+    setPreviewName(null);
+    setError(null);
+  }
+
   return (
     <form
       className="grid gap-5"
       onSubmit={(event) => {
         event.preventDefault();
-        if (!file) {
-          setError("Selecciona una imagen IVCM valida.");
+        if (!files.length) {
+          setError("Selecciona una o varias imagenes IVCM validas.");
           return;
         }
         onSubmit({
-          file,
+          files,
           eye,
           z_depth_um: zDepth ? Number(zDepth) : null,
         });
@@ -121,41 +158,76 @@ export function ImageUploadZone({
           isDragActive && "border-primary bg-accent",
         )}
       >
-        <input {...getInputProps()} aria-label="Seleccionar imagen IVCM" />
-        {previewUrl && file ? (
+        <input {...getInputProps()} aria-label="Seleccionar imagenes IVCM" />
+        {files.length ? (
           <div className="grid w-full gap-4 md:grid-cols-[260px_1fr] md:text-left">
             <div className="overflow-hidden rounded-md border bg-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewUrl}
-                alt={`Vista previa de ${file.name}`}
-                className="h-48 w-full object-contain"
-              />
+              {previewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={previewUrl}
+                  alt={`Vista previa de ${previewName ?? "imagen IVCM"}`}
+                  className="h-48 w-full object-contain"
+                />
+              ) : (
+                <div className="grid h-48 place-items-center text-sm text-muted-foreground">
+                  Vista previa no disponible
+                </div>
+              )}
             </div>
-            <div className="space-y-3">
+
+            <div className="min-w-0 space-y-3">
               <div>
-                <p className="font-medium">{file.name}</p>
+                <p className="font-medium">
+                  {files.length} imagen{files.length !== 1 ? "es" : ""} seleccionada
+                  {files.length !== 1 ? "s" : ""}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  {formatBytes(file.size)} · {dimensions ?? "Leyendo dimensiones"}
+                  Total {formatBytes(files.reduce((sum, item) => sum + item.size, 0))}
                 </p>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (previewUrl) {
-                    URL.revokeObjectURL(previewUrl);
-                  }
-                  setFile(null);
-                  setPreviewUrl(null);
-                  setDimensions(null);
-                  setError(null);
-                }}
-              >
-                <X />
-                Quitar
-              </Button>
+
+              <div className="max-h-44 space-y-2 overflow-y-auto rounded-md border p-2">
+                {files.map((item, index) => (
+                  <div
+                    key={`${item.name}-${item.size}-${index}`}
+                    className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+                  >
+                    <button
+                      type="button"
+                      className="min-w-0 flex-1 truncate text-left hover:text-primary"
+                      onClick={() => setPreviewFromFile(item)}
+                      title={item.name}
+                    >
+                      {item.name}
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {formatBytes(item.size)}
+                      </span>
+                    </button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      onClick={() => removeFile(index)}
+                      aria-label={`Quitar ${item.name}`}
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={open}>
+                  <ImagePlus />
+                  Agregar mas
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={clearFiles}>
+                  <X />
+                  Quitar todas
+                </Button>
+              </div>
             </div>
           </div>
         ) : (
@@ -164,14 +236,15 @@ export function ImageUploadZone({
               <UploadCloud className="size-7" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-medium">Arrastra una imagen IVCM o selecciona un archivo</p>
+              <p className="font-medium">Arrastra imagenes IVCM o selecciona archivos</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                PNG, JPEG, TIFF o BMP · imagen IVCM/CCM en escala de grises · Máximo {MAX_UPLOAD_MB} MB
+                PNG, JPEG, TIFF o BMP; puedes seleccionar varias; maximo {MAX_UPLOAD_MB} MB por
+                archivo
               </p>
             </div>
             <Button type="button" variant="outline" onClick={open}>
               <ImagePlus />
-              Seleccionar imagen
+              Seleccionar imagenes
             </Button>
           </div>
         )}
@@ -204,9 +277,10 @@ export function ImageUploadZone({
             ))}
           </div>
         </fieldset>
+
         <div className="grid gap-2" data-tour-id="upload__z-depth-field">
           <div className="flex items-center gap-1">
-            <Label htmlFor="z_depth_um">Profundidad Z (μm)</Label>
+            <Label htmlFor="z_depth_um">Profundidad Z (um)</Label>
             <ZDepthInfoDialog />
           </div>
           <Input
@@ -223,14 +297,18 @@ export function ImageUploadZone({
       {isPending ? (
         <div className="rounded-lg border bg-card p-4">
           <Progress value={progress} aria-label={`Progreso de subida ${progress}%`} />
-          <p className="mt-2 text-sm text-muted-foreground">Subiendo imagen... {progress}%</p>
+          <p className="mt-2 text-sm text-muted-foreground">Subiendo imagenes... {progress}%</p>
         </div>
       ) : null}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isPending || !file} data-tour-id="upload__submit-button">
+        <Button type="submit" disabled={isPending || !files.length} data-tour-id="upload__submit-button">
           <UploadCloud />
-          {isPending ? "Subiendo" : "Subir imagen IVCM"}
+          {isPending
+            ? "Subiendo"
+            : files.length > 1
+              ? `Subir ${files.length} imagenes`
+              : "Subir imagen IVCM"}
         </Button>
       </div>
     </form>
@@ -244,38 +322,41 @@ function ZDepthInfoDialog() {
         <button
           type="button"
           className="rounded text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Información sobre Profundidad Z"
+          aria-label="Informacion sobre Profundidad Z"
         >
           <HelpCircle className="size-3.5" aria-hidden="true" />
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Profundidad Z (μm)</DialogTitle>
+          <DialogTitle>Profundidad Z (um)</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 text-sm">
           <div className="space-y-1">
-            <p className="font-medium text-muted-foreground uppercase tracking-wide text-xs">Qué es</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Que es
+            </p>
             <p>
-              El plano de enfoque de la imagen confocal expresado en micrómetros (μm). Los
-              microscopios confocales corneales capturan imágenes a diferentes profundidades de la
-              córnea — este valor indica a qué profundidad fue tomada la imagen.
+              El plano de enfoque de la imagen confocal expresado en micrometros. Este valor indica
+              a que profundidad fue tomada la imagen.
             </p>
           </div>
           <div className="space-y-1">
-            <p className="font-medium text-muted-foreground uppercase tracking-wide text-xs">Ejemplo</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Ejemplo
+            </p>
             <p>
-              Un estudio típico captura planos entre 40 μm y 60 μm de profundidad corneal, donde se
-              encuentra el plexo nervioso subbasal. Si su microscopio registra{" "}
-              <span className="font-mono">Z = 52.3 μm</span>, introduzca ese valor.
+              Un estudio tipico captura planos entre 40 um y 60 um de profundidad corneal. Si el
+              equipo registra Z = 52.3 um, introduzca ese valor.
             </p>
           </div>
           <div className="space-y-1">
-            <p className="font-medium text-muted-foreground uppercase tracking-wide text-xs">¿Es obligatorio?</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Es obligatorio?
+            </p>
             <p>
-              No. Si su equipo no registra este dato o no lo tiene disponible, puede dejar el campo
-              vacío — no afecta al análisis de IA. Su valor mejora la trazabilidad clínica del
-              estudio longitudinal.
+              No. Si su equipo no registra este dato, puede dejar el campo vacio. No afecta al
+              analisis de IA y mejora la trazabilidad cuando esta disponible.
             </p>
           </div>
         </div>
@@ -290,11 +371,7 @@ async function validateImageFile(file: File): Promise<string | null> {
   }
 
   const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
-  const valid =
-    isPng(bytes) ||
-    isJpeg(bytes) ||
-    isTiff(bytes) ||
-    isBmp(bytes);
+  const valid = isPng(bytes) || isJpeg(bytes) || isTiff(bytes) || isBmp(bytes);
 
   if (!valid) {
     return "El tipo real del archivo no coincide con PNG, JPEG/JFIF, TIFF o BMP.";

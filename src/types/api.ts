@@ -158,6 +158,12 @@ export interface UploadImageInput {
   z_depth_um?: number | null;
 }
 
+export interface UploadImagesInput {
+  files: File[];
+  eye?: EyeSide | null;
+  z_depth_um?: number | null;
+}
+
 export interface AggregatePatientInput {
   aggregation_method: AggregationMethod;
   threshold: number;

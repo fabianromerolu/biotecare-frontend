@@ -22,8 +22,8 @@ export type ManualSection = {
   showInWeb?: boolean;
 };
 
-export const MANUAL_VERSION = "1.0.0";
-export const MANUAL_DATE = "2026-06-04";
+export const MANUAL_VERSION = "1.1.0";
+export const MANUAL_DATE = "2026-06-17";
 export const APP_MANUAL_NAME = "Biotecare";
 
 export const MANUAL_SECTIONS: ManualSection[] = [
@@ -319,6 +319,134 @@ export const MANUAL_SECTIONS: ManualSection[] = [
         ],
         tags: ["/patients/:id", "aggregate"],
         previewId: "aggregate",
+      },
+    ],
+  },
+
+  /* ── Modelo de IA ─────────────────────────────────────────────────────── */
+  {
+    id: "model",
+    title: "Modelo de IA y estado del sistema",
+    iconName: "Microscope",
+    questions: [
+      {
+        id: "model-status",
+        question: "¿Qué información muestra el módulo Modelo de IA?",
+        answer:
+          "El módulo Modelo de IA resume el estado técnico del sistema y del modelo activo. Permite comprobar si la API y la base de datos están disponibles, revisar la versión del modelo, la tarea configurada, las etiquetas posibles y los biomarcadores informados por el backend.",
+        steps: [
+          "Abre Modelo en el menú lateral.",
+          "Revisa la tarjeta Servicios para confirmar el estado de la API y la base de datos.",
+          "Revisa la tarjeta Modelo activo para consultar versión, tarea, etiquetas y biomarcadores.",
+          "Pulsa Refrescar estado si necesitas consultar de nuevo el backend.",
+        ],
+        note:
+          "Este módulo no ejecuta inferencias. Su finalidad es dar contexto técnico y operativo sobre el sistema activo.",
+        tags: ["/model", "model"],
+      },
+      {
+        id: "model-interpretation",
+        question: "¿Cómo ayuda la página Modelo a entender el análisis de IA?",
+        answer:
+          "La página explica el recorrido de una imagen: carga, búsqueda de patrones con ResNet-18, generación de Grad-CAM y biomarcadores, y revisión médica final. También recuerda que Grad-CAM y los biomarcadores son apoyo interpretativo y que la decisión clínica sigue siendo humana.",
+        tags: ["/model", "model", "interpretation"],
+      },
+    ],
+  },
+
+  /* ── Marco legal ──────────────────────────────────────────────────────── */
+  {
+    id: "legal",
+    title: "Marco legal y cumplimiento",
+    iconName: "Scale",
+    questions: [
+      {
+        id: "legal-purpose",
+        question: "¿Para qué sirve el módulo Marco legal?",
+        answer:
+          "El módulo Marco legal resume las obligaciones normativas relevantes para Biotecare en el contexto español y europeo. Incluye referencias a RGPD, LOPDGDD, EU AI Act, MDR y normativa sanitaria, además de una matriz de cumplimiento, hoja de ruta regulatoria, riesgos jurídicos y glosario.",
+        steps: [
+          "Abre Legal en el menú lateral.",
+          "Lee el resumen inicial para entender la viabilidad jurídica y la clasificación probable.",
+          "Revisa Normas aplicables para ver obligaciones y autoridades de referencia.",
+          "Consulta la matriz de cumplimiento para diferenciar puntos implementados, parciales y pendientes.",
+          "Usa la hoja de ruta regulatoria para planificar pasos antes de datos reales, despliegue clínico o comercialización.",
+        ],
+        note:
+          "La sección es orientativa y no sustituye una revisión legal formal antes de uso clínico real o comercialización.",
+        tags: ["/legal", "legal"],
+      },
+      {
+        id: "legal-reset",
+        question: "¿Qué permite el botón de restablecer aviso legal?",
+        answer:
+          "El módulo Legal incluye una opción para restablecer la confirmación guardada del aviso legal en el navegador. Sirve para volver a mostrar el aviso al usuario cuando se necesite revisar o validar de nuevo la aceptación local.",
+        tags: ["/legal", "legal", "reset"],
+      },
+    ],
+  },
+
+  /* ── Módulo de investigación: Subfenotipos IVCM ───────────────────────── */
+  {
+    id: "subphenotypes",
+    title: "Módulo de investigación: Subfenotipos IVCM",
+    iconName: "FlaskConical",
+    questions: [
+      {
+        id: "subphenotypes-what",
+        question: "¿Qué es el módulo Subfenotipos IVCM?",
+        answer:
+          "Subfenotipos IVCM es un módulo de investigación no diagnóstico. Agrupa imágenes IVCM mediante técnicas no supervisadas para explorar patrones visuales, revisar calidad de imagen y generar evidencia técnica complementaria. No sustituye ni modifica el análisis clínico principal de Biotecare.",
+        note:
+          "La regla de uso es: Biotecare asiste el flujo clínico supervisado; Subfenotipos IVCM explora patrones y subgrupos visuales.",
+        tags: ["/subfenotipos-ivcm", "subphenotypes", "research"],
+        previewId: "subphenotypes",
+      },
+      {
+        id: "subphenotypes-run",
+        question: "¿Cómo ejecutar una exploración de subfenotipos?",
+        answer:
+          "Entra en Subfenotipos IVCM desde el menú lateral, configura la corrida y pulsa Ejecutar exploración. Puedes usar todas las imágenes disponibles del médico o limitar la corrida a pacientes seleccionados. El sistema requiere al menos seis imágenes IVCM legibles para generar clusters.",
+        steps: [
+          "Abre Subfenotipos IVCM en el menú lateral.",
+          "Define el número de clusters. El valor inicial recomendado es 3.",
+          "Mantén PCA components en 2 para visualizar PC1 y PC2.",
+          "Activa o desactiva la comparación con GMM y el consensus clustering según el objetivo del análisis.",
+          "Selecciona pacientes específicos o deja la selección vacía para usar todos los pacientes del médico actual.",
+          "Pulsa Ejecutar exploración y espera a que la corrida finalice.",
+        ],
+        warning:
+          "Si hay menos de seis imágenes legibles, o si el número de clusters supera el número de imágenes válidas, la corrida no se ejecutará.",
+        tags: ["/subfenotipos-ivcm", "subphenotypes", "run"],
+        previewId: "subphenotypes",
+      },
+      {
+        id: "subphenotypes-results",
+        question: "¿Cómo interpretar los resultados de una corrida?",
+        answer:
+          "Al pulsar Ver en una corrida, el sistema muestra el detalle con métricas globales, PCA coloreado por cluster, distribución de imágenes por cluster y tabla de asignaciones. Las métricas ARI ayudan a comparar la coherencia entre KMeans, GMM y consenso. Las métricas de calidad permiten detectar si un cluster podría estar explicado por imágenes borrosas, saturadas o de bajo contraste.",
+        steps: [
+          "Revisa el estado de la corrida: Ejecutando, Completada o Fallida.",
+          "Comprueba el número de imágenes procesadas y clusters generados.",
+          "Lee ARI KMeans/GMM y ARI consenso si están disponibles.",
+          "Observa el gráfico PCA para detectar agrupaciones visuales.",
+          "Consulta la distribución para ver si algún cluster concentra demasiadas o muy pocas imágenes.",
+          "Revisa la tabla de asignaciones con paciente, archivo, cluster, PC1, PC2, nitidez, contraste y saturación.",
+        ],
+        note:
+          "Un cluster no equivale a un diagnóstico. Debe interpretarse como una agrupación exploratoria que requiere análisis posterior y validación.",
+        tags: ["/subfenotipos-ivcm", "subphenotypes", "results"],
+        previewId: "subphenotypes",
+      },
+      {
+        id: "subphenotypes-clinical-flow",
+        question: "¿Este módulo afecta las predicciones clínicas existentes?",
+        answer:
+          "No. Subfenotipos IVCM trabaja como una capa separada de investigación. Utiliza imágenes ya cargadas, pero guarda sus corridas y asignaciones en estructuras independientes. No escribe resultados en Prediction, no cambia el estado clínico de las imágenes y no altera la revisión médica ni el análisis agregado del paciente.",
+        note:
+          "Su valor principal es apoyar investigación interna, control de calidad, descubrimiento de patrones visuales y futuras mejoras de biomarcadores.",
+        tags: ["/subfenotipos-ivcm", "subphenotypes", "clinical-flow"],
+        previewId: "subphenotypes",
       },
     ],
   },

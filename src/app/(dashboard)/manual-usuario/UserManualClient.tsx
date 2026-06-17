@@ -4,6 +4,9 @@ import {
   BarChart2,
   BookMarked,
   BrainCircuit,
+  FlaskConical,
+  Microscope,
+  Scale,
   Stethoscope,
   Upload,
   UsersRound,
@@ -23,6 +26,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; "aria-h
   BrainCircuit,
   Stethoscope,
   BarChart2,
+  FlaskConical,
+  Microscope,
+  Scale,
 };
 
 /* Only show sections where showInWeb is not explicitly false */

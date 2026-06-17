@@ -12,6 +12,7 @@ import { GradcamPreview } from "./GradcamPreview";
 import { BiomarkersPreview } from "./BiomarkersPreview";
 import { ReviewPreview } from "./ReviewPreview";
 import { AggregatePreview } from "./AggregatePreview";
+import { SubphenotypesPreview } from "./SubphenotypesPreview";
 
 export const MANUAL_PREVIEWS: Record<string, ComponentType> = {
   login: LoginPreview,
@@ -27,6 +28,7 @@ export const MANUAL_PREVIEWS: Record<string, ComponentType> = {
   biomarkers: BiomarkersPreview,
   review: ReviewPreview,
   aggregate: AggregatePreview,
+  subphenotypes: SubphenotypesPreview,
 };
 
 export type PreviewId = keyof typeof MANUAL_PREVIEWS;

@@ -234,9 +234,10 @@ function MockupBar({ url }: { url: string }) {
 }
 
 function SidebarMockPdf({ active }: { active: string }) {
-  const items = ["Pacientes", "Modelo", "Legal", "Manual"];
+  const items = ["Pacientes", "Subfenotipos IVCM", "Modelo", "Legal", "Manual"];
   const activeMap: Record<string, string> = {
     "/patients": "Pacientes", "/model": "Modelo",
+    "/subfenotipos-ivcm": "Subfenotipos IVCM",
     "/legal": "Legal", "/manual-usuario": "Manual",
   };
   const activeLabel = activeMap[active] ?? "";
@@ -591,6 +592,166 @@ function ReviewDiagram() {
   );
 }
 
+function PdfClusterBadge({ cluster }: { cluster: number }) {
+  const colors = [C.blue, C.green, C.red];
+  return (
+    <View style={{ borderWidth: 1, borderColor: colors[cluster], borderRadius: 8, padding: "1 4" }}>
+      <Text style={{ fontSize: 6.5, color: colors[cluster], fontFamily: "Helvetica-Bold" }}>
+        Cluster {cluster}
+      </Text>
+    </View>
+  );
+}
+
+function SubphenotypesDiagram() {
+  return (
+    <View style={styles.mockupContainer} wrap={false}>
+      <MockupBar url="/subfenotipos-ivcm" />
+      <View style={[styles.mockupContent, { flexDirection: "row" }]}>
+        <SidebarMockPdf active="/subfenotipos-ivcm" />
+        <View style={{ flex: 1, paddingLeft: 8, gap: 5 }}>
+          <View style={{ flexDirection: "row", gap: 6 }}>
+            <View style={[styles.mockupCard, { width: 128 }]}>
+              <Text style={styles.mockupCardTitle}>① Nueva corrida</Text>
+              <View style={{ flexDirection: "row", gap: 3, marginBottom: 4 }}>
+                {["Clusters 3", "PCA 2", "Semilla 42"].map((item) => (
+                  <View key={item} style={[styles.mockupField, { flex: 1, padding: "2 3" }]}>
+                    <Text style={{ fontSize: 6.3, color: C.textMid }}>{item}</Text>
+                  </View>
+                ))}
+              </View>
+              <View style={[styles.mockupField, { marginBottom: 3 }]}>
+                <Text style={{ fontSize: 6.5, color: C.textMid }}>Comparar con GMM ✓</Text>
+              </View>
+              <View style={[styles.mockupField, { marginBottom: 4 }]}>
+                <Text style={{ fontSize: 6.5, color: C.textMid }}>Consensus clustering ✓</Text>
+              </View>
+              <View style={[styles.mockupBtn, { alignSelf: "stretch", alignItems: "center" }]}>
+                <Text style={styles.mockupBtnText}>② Ejecutar exploración</Text>
+              </View>
+            </View>
+
+            <View style={[styles.mockupCard, { flex: 1 }]}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                <Text style={styles.mockupCardTitle}>③ Corridas</Text>
+                <View style={{ backgroundColor: C.greenLight, borderRadius: 8, padding: "1 5" }}>
+                  <Text style={{ fontSize: 6.5, color: C.green, fontFamily: "Helvetica-Bold" }}>Completada</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "row", backgroundColor: "#f8fafc", borderBottomWidth: 1, borderBottomColor: C.border, padding: "3 4" }}>
+                <Text style={{ flex: 1, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Corrida</Text>
+                <Text style={{ width: 38, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Imágenes</Text>
+                <Text style={{ width: 34, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Clusters</Text>
+                <Text style={{ width: 28, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Acción</Text>
+              </View>
+              <View style={{ flexDirection: "row", padding: "3 4" }}>
+                <Text style={{ flex: 1, fontSize: 7, color: C.textMid }}>8f3a21</Text>
+                <Text style={{ width: 38, fontSize: 7, color: C.textMid }}>12</Text>
+                <Text style={{ width: 34, fontSize: 7, color: C.textMid }}>3</Text>
+                <View style={[styles.mockupBtn, { width: 28, padding: "1 4", alignItems: "center" }]}>
+                  <Text style={{ fontSize: 6.5, color: C.white, fontFamily: "Helvetica-Bold" }}>Ver</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View style={[styles.mockupCard, { borderColor: C.primary }]}>
+            <Text style={styles.mockupCardTitle}>④ Detalle de resultados</Text>
+            <View style={{ flexDirection: "row", gap: 4, marginBottom: 6 }}>
+              {[
+                ["Imágenes", "12"],
+                ["Clusters", "3"],
+                ["ARI GMM", "0.71"],
+                ["ARI consenso", "0.68"],
+              ].map(([label, value]) => (
+                <View key={label} style={{ flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 3, padding: 4 }}>
+                  <Text style={{ fontSize: 6, color: C.textMuted }}>{label}</Text>
+                  <Text style={{ fontSize: 10, color: C.textDark, fontFamily: "Helvetica-Bold" }}>{value}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 6 }}>
+              <View style={{ flex: 1, borderWidth: 1, borderColor: C.border, borderRadius: 4, padding: 5 }}>
+                <Text style={{ fontSize: 7, fontFamily: "Helvetica-Bold", color: C.textMid, marginBottom: 3 }}>
+                  ⑤ PCA por cluster
+                </Text>
+                <Svg viewBox="0 0 160 80" style={{ width: "100%", height: 72 }}>
+                  <Line x1="18" y1="64" x2="150" y2="64" stroke="#cbd5e1" />
+                  <Line x1="18" y1="8" x2="18" y2="64" stroke="#cbd5e1" />
+                  {[
+                    { x: 36, y: 48, color: C.blue },
+                    { x: 48, y: 40, color: C.blue },
+                    { x: 70, y: 26, color: C.green },
+                    { x: 82, y: 30, color: C.green },
+                    { x: 118, y: 46, color: C.red },
+                    { x: 128, y: 36, color: C.red },
+                  ].map((point, index) => (
+                    <Circle key={index} cx={point.x} cy={point.y} r="4" fill={point.color} opacity="0.85" />
+                  ))}
+                </Svg>
+              </View>
+
+              <View style={{ width: 120, borderWidth: 1, borderColor: C.border, borderRadius: 4, padding: 5 }}>
+                <Text style={{ fontSize: 7, fontFamily: "Helvetica-Bold", color: C.textMid, marginBottom: 3 }}>
+                  ⑥ Distribución
+                </Text>
+                {[0, 1, 2].map((cluster) => (
+                  <View key={cluster} style={{ marginBottom: 4 }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 2 }}>
+                      <PdfClusterBadge cluster={cluster} />
+                      <Text style={{ fontSize: 6, color: C.textMuted }}>{[5, 4, 3][cluster]} img.</Text>
+                    </View>
+                    <View style={{ height: 4, backgroundColor: "#e5e7eb", borderRadius: 2 }}>
+                      <View
+                        style={{
+                          height: 4,
+                          width: `${[80, 65, 48][cluster]}%`,
+                          borderRadius: 2,
+                          backgroundColor: [C.blue, C.green, C.red][cluster],
+                        }}
+                      />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={{ marginTop: 6, borderWidth: 1, borderColor: C.border, borderRadius: 4, padding: 5 }}>
+              <Text style={{ fontSize: 7, fontFamily: "Helvetica-Bold", color: C.textMid, marginBottom: 3 }}>
+                ⑦ Tabla de asignaciones
+              </Text>
+              <View style={{ flexDirection: "row", backgroundColor: "#f8fafc", padding: "2 3" }}>
+                {["Paciente", "Imagen", "Cluster", "PC1", "Nitidez"].map((header) => (
+                  <Text key={header} style={{ flex: 1, fontSize: 6, color: C.textMuted, fontFamily: "Helvetica-Bold" }}>
+                    {header}
+                  </Text>
+                ))}
+              </View>
+              <View style={{ flexDirection: "row", padding: "2 3" }}>
+                <Text style={{ flex: 1, fontSize: 6.5, color: C.textMid }}>HRT-2026</Text>
+                <Text style={{ flex: 1, fontSize: 6.5, color: C.textMid }}>cornea_od.tif</Text>
+                <View style={{ flex: 1 }}><PdfClusterBadge cluster={1} /></View>
+                <Text style={{ flex: 1, fontSize: 6.5, color: C.textMid }}>0.42</Text>
+                <Text style={{ flex: 1, fontSize: 6.5, color: C.textMid }}>128.3</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+      <View style={{ padding: 6, backgroundColor: "#fafafa" }}>
+        <Callout n={1} text="Configura clusters, PCA, semilla y métodos de comparación." />
+        <Callout n={2} text="Ejecuta la exploración solo con al menos seis imágenes IVCM legibles." />
+        <Callout n={3} text='El botón "Ver" abre el detalle de la corrida seleccionada.' />
+        <Callout n={4} text="El detalle reúne métricas, PCA, distribución y asignaciones." />
+        <Callout n={5} text="El PCA permite explorar agrupaciones visuales, no diagnósticos." />
+        <Callout n={6} text="La distribución ayuda a detectar clusters dominantes o minoritarios." />
+        <Callout n={7} text="La tabla permite revisar paciente, archivo, cluster y calidad de imagen." />
+      </View>
+    </View>
+  );
+}
+
 /* Mapping from previewId → PDF diagram component */
 const PDF_DIAGRAMS: Record<string, () => React.JSX.Element> = {
   login: LoginDiagram,
@@ -599,6 +760,7 @@ const PDF_DIAGRAMS: Record<string, () => React.JSX.Element> = {
   upload: UploadDiagram,
   analysis: AnalysisDiagram,
   review: ReviewDiagram,
+  subphenotypes: SubphenotypesDiagram,
 };
 
 /* ── Main document ─────────────────────────────────────────── */

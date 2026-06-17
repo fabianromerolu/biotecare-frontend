@@ -46,6 +46,7 @@ export function AppFrame({ url, children, className, scale = "md" }: AppFramePro
 export function SidebarMock({ active }: { active: string }) {
   const items = [
     { href: "/patients", label: "Pacientes" },
+    { href: "/subfenotipos-ivcm", label: "Subfenotipos IVCM" },
     { href: "/model", label: "Modelo" },
     { href: "/legal", label: "Legal" },
     { href: "/manual-usuario", label: "Manual" },

@@ -10,7 +10,7 @@ import {
   Settings2,
   Table2,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,7 @@ export default function SubphenotypePage() {
   const [useGmm, setUseGmm] = useState(true);
   const [useConsensus, setUseConsensus] = useState(true);
   const [randomSeed, setRandomSeed] = useState(42);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const activeRunId = selectedRunId ?? runsQuery.data?.[0]?.id;
 
@@ -68,6 +69,14 @@ export default function SubphenotypePage() {
     );
   }
 
+  function showRunDetail(runId: string) {
+    setSelectedRunId(runId);
+    window.requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      resultsRef.current?.focus({ preventScroll: true });
+    });
+  }
+
   function submitRun() {
     createRun.mutate(
       {
@@ -79,7 +88,7 @@ export default function SubphenotypePage() {
         random_seed: randomSeed,
       },
       {
-        onSuccess: (run) => setSelectedRunId(run.id),
+        onSuccess: (run) => showRunDetail(run.id),
       },
     );
   }
@@ -268,9 +277,10 @@ export default function SubphenotypePage() {
                         <Button
                           variant={run.id === activeRunId ? "default" : "outline"}
                           size="sm"
-                          onClick={() => setSelectedRunId(run.id)}
+                          aria-label={`Ver detalle de la corrida ${compactId(run.id)}`}
+                          onClick={() => showRunDetail(run.id)}
                         >
-                          Ver
+                          {run.id === activeRunId ? "Viendo" : "Ver"}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -287,15 +297,17 @@ export default function SubphenotypePage() {
         </Card>
       </section>
 
-      {selectedRun ? (
-        <SubphenotypeRunDetail
-          run={selectedRun}
-          assignments={assignmentsQuery.data ?? []}
-          loadingAssignments={assignmentsQuery.isLoading}
-        />
-      ) : (
-        <SubphenotypeResultsGuidePlaceholder />
-      )}
+      <div ref={resultsRef} tabIndex={-1} className="scroll-mt-6 outline-none">
+        {selectedRun ? (
+          <SubphenotypeRunDetail
+            run={selectedRun}
+            assignments={assignmentsQuery.data ?? []}
+            loadingAssignments={assignmentsQuery.isLoading}
+          />
+        ) : (
+          <SubphenotypeResultsGuidePlaceholder />
+        )}
+      </div>
     </div>
   );
 }

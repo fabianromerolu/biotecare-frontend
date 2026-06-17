@@ -61,22 +61,25 @@ export function SubphenotypesPreview() {
                       Completada
                     </span>
                   </div>
-                  <div className="grid grid-cols-[1fr_55px_45px_38px] gap-1 rounded bg-slate-50 px-1.5 py-1 text-[7px] font-semibold text-slate-500">
+                  <div className="grid grid-cols-[1fr_45px_40px_65px] gap-1 rounded bg-slate-50 px-1.5 py-1 text-[7px] font-semibold text-slate-500">
                     <span>Corrida</span>
-                    <span>Imágenes</span>
+                    <span>Img.</span>
                     <span>Clusters</span>
-                    <span>Acción</span>
+                    <span>Acciones</span>
                   </div>
-                  <div className="grid grid-cols-[1fr_55px_45px_38px] gap-1 px-1.5 py-1 text-[7px] text-slate-700">
+                  <div className="grid grid-cols-[1fr_45px_40px_65px] gap-1 px-1.5 py-1 text-[7px] text-slate-700">
                     <span>8f3a21</span>
                     <span>12</span>
                     <span>3</span>
-                    <span className="rounded bg-blue-600 px-1 text-center font-bold text-white">Ver</span>
+                    <span className="flex gap-1">
+                      <span className="rounded bg-blue-600 px-1 text-center font-bold text-white">Ver</span>
+                      <span className="rounded bg-red-600 px-1 text-center font-bold text-white">Eliminar</span>
+                    </span>
                   </div>
                 </div>
 
                 <div className="rounded-lg border-2 border-blue-500 bg-white p-2">
-                  <p className="mb-1.5 text-[9px] font-bold text-slate-700">4. Detalle de resultados</p>
+                  <p className="mb-1.5 text-[9px] font-bold text-slate-700">4. Pantalla aparte de detalle</p>
                   <div className="grid grid-cols-4 gap-1.5">
                     {[
                       ["Imágenes", "12"],
@@ -129,7 +132,7 @@ export function SubphenotypesPreview() {
                   </div>
 
                   <div className="mt-2 rounded border bg-slate-50 p-1.5">
-                    <p className="mb-1 text-[7px] font-semibold text-slate-600">7. Tabla de asignaciones</p>
+                    <p className="mb-1 text-[7px] font-semibold text-slate-600">7. Asignaciones e imagen</p>
                     <div className="grid grid-cols-[1fr_1fr_50px_35px_35px] gap-1 text-[6.5px] text-slate-500">
                       <span>Paciente</span>
                       <span>Imagen</span>
@@ -144,6 +147,9 @@ export function SubphenotypesPreview() {
                       <span>0.42</span>
                       <span>128.3</span>
                     </div>
+                    <div className="mt-1 rounded border border-blue-200 bg-white px-1.5 py-1 text-[6.5px] text-slate-600">
+                      Desplegable: imagen original + Grad-CAM si existe
+                    </div>
                   </div>
                 </div>
               </div>
@@ -155,11 +161,11 @@ export function SubphenotypesPreview() {
       <ul className="space-y-1.5 pl-1">
         <Callout n={1} label="Configura clusters, PCA, semilla y métodos de comparación antes de ejecutar." />
         <Callout n={2} label="La exploración requiere al menos seis imágenes IVCM legibles." />
-        <Callout n={3} label='El botón "Ver" abre el detalle de la corrida seleccionada.' />
+        <Callout n={3} label='El botón "Ver" abre una pantalla aparte; "Eliminar" borra solo la corrida exploratoria.' />
         <Callout n={4} label="El detalle reúne métricas, PCA, distribución y asignaciones por imagen." />
         <Callout n={5} label="El PCA ayuda a observar agrupaciones visuales, no diagnósticos." />
         <Callout n={6} label="La distribución permite detectar clusters dominantes o minoritarios." />
-        <Callout n={7} label="La tabla permite revisar paciente, archivo, cluster y métricas de calidad." variant="green" />
+        <Callout n={7} label="Cada asignación puede desplegar la imagen original y el Grad-CAM cuando exista." variant="green" />
       </ul>
     </div>
   );

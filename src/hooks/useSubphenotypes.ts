@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api/client";
 import {
   createSubphenotypeRun,
+  deleteSubphenotypeRun,
   getSubphenotypeRun,
   listSubphenotypeAssignments,
   listSubphenotypeRuns,
@@ -51,6 +52,20 @@ export function useCreateSubphenotypeRun() {
         queryKey: ["subphenotypes", "runs", run.id, "assignments"],
       });
       toast.success("Exploracion de subfenotipos IVCM completada.");
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useDeleteSubphenotypeRun() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (runId: string) => deleteSubphenotypeRun(runId),
+    onSuccess: (_data, runId) => {
+      queryClient.invalidateQueries({ queryKey: ["subphenotypes", "runs"] });
+      queryClient.removeQueries({ queryKey: ["subphenotypes", "runs", runId] });
+      queryClient.removeQueries({ queryKey: ["subphenotypes", "runs", runId, "assignments"] });
+      toast.success("Corrida eliminada.");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });

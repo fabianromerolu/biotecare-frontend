@@ -99,10 +99,11 @@ export function usePredictImage(patientId: string, imageId: string) {
   });
 }
 
-export function useImageFile(imageId: string) {
+export function useImageFile(imageId: string, enabled = true) {
   return useQuery({
     queryKey: ["images", imageId, "file"],
     queryFn: () => getImageFileBlob(imageId),
+    enabled,
     staleTime: 10 * 60_000,
     retry: 1,
     retryDelay: 1000,

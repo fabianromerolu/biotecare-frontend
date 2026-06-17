@@ -22,7 +22,7 @@ export type ManualSection = {
   showInWeb?: boolean;
 };
 
-export const MANUAL_VERSION = "1.1.0";
+export const MANUAL_VERSION = "1.2.0";
 export const MANUAL_DATE = "2026-06-17";
 export const APP_MANUAL_NAME = "Biotecare";
 
@@ -424,8 +424,9 @@ export const MANUAL_SECTIONS: ManualSection[] = [
         id: "subphenotypes-results",
         question: "¿Cómo interpretar los resultados de una corrida?",
         answer:
-          "Al pulsar Ver en una corrida, el sistema muestra el detalle con métricas globales, PCA coloreado por cluster, distribución de imágenes por cluster y tabla de asignaciones. Las métricas ARI ayudan a comparar la coherencia entre KMeans, GMM y consenso. Las métricas de calidad permiten detectar si un cluster podría estar explicado por imágenes borrosas, saturadas o de bajo contraste.",
+          "Al pulsar Ver en una corrida, el sistema abre una pantalla independiente de detalle con métricas globales, PCA coloreado por cluster, distribución de imágenes por cluster y tabla de asignaciones. Las métricas ARI ayudan a comparar la coherencia entre KMeans, GMM y consenso. Las métricas de calidad permiten detectar si un cluster podría estar explicado por imágenes borrosas, saturadas o de bajo contraste.",
         steps: [
+          "Desde el listado de corridas, pulsa Ver para abrir la corrida en una vista separada.",
           "Revisa el estado de la corrida: Ejecutando, Completada o Fallida.",
           "Comprueba el número de imágenes procesadas y clusters generados.",
           "Lee ARI KMeans/GMM y ARI consenso si están disponibles.",
@@ -436,6 +437,40 @@ export const MANUAL_SECTIONS: ManualSection[] = [
         note:
           "Un cluster no equivale a un diagnóstico. Debe interpretarse como una agrupación exploratoria que requiere análisis posterior y validación.",
         tags: ["/subfenotipos-ivcm", "subphenotypes", "results"],
+        previewId: "subphenotypes",
+      },
+      {
+        id: "subphenotypes-images-gradcam",
+        question: "¿Cómo revisar la imagen y el Grad-CAM dentro de una corrida?",
+        answer:
+          "En la pantalla de detalle de una corrida, cada asignación incluye un desplegable para visualizar la imagen original y, si existe, su mapa Grad-CAM. Esto permite contrastar el cluster asignado con la apariencia visual real de la imagen y con la explicación generada por el flujo clínico de IA.",
+        steps: [
+          "Abre el detalle de una corrida con el botón Ver.",
+          "Baja hasta Imágenes asignadas.",
+          "Despliega la fila de la imagen que quieras revisar.",
+          "Comprueba la imagen original y el Grad-CAM si está disponible.",
+          "Si el Grad-CAM no aparece, ejecuta primero el análisis IA de esa imagen desde el expediente clínico.",
+        ],
+        note:
+          "El Grad-CAM pertenece al análisis clínico individual de la imagen. El módulo de investigación solo lo reutiliza para facilitar la inspección visual.",
+        tags: ["/subfenotipos-ivcm", "subphenotypes", "gradcam"],
+        previewId: "subphenotypes",
+      },
+      {
+        id: "subphenotypes-delete",
+        question: "¿Cómo eliminar una corrida de investigación?",
+        answer:
+          "Puedes eliminar una corrida desde el listado o desde su pantalla de detalle. La eliminación borra la corrida exploratoria y sus asignaciones, pero no elimina imágenes, predicciones clínicas, revisiones médicas ni Grad-CAM existentes.",
+        steps: [
+          "Entra en Subfenotipos IVCM.",
+          "Localiza la corrida en la tabla.",
+          "Pulsa Eliminar.",
+          "Lee el diálogo de confirmación.",
+          "Pulsa Eliminar definitivamente si quieres borrar la corrida.",
+        ],
+        warning:
+          "La eliminación de la corrida no se puede deshacer. Si necesitas conservar métricas o asignaciones, expórtalas o documéntalas antes de borrar.",
+        tags: ["/subfenotipos-ivcm", "subphenotypes", "delete"],
         previewId: "subphenotypes",
       },
       {

@@ -37,6 +37,10 @@ export async function listSubphenotypeAssignments(runId: string): Promise<Subphe
   return data;
 }
 
+export async function deleteSubphenotypeRun(runId: string): Promise<void> {
+  await apiClient.delete(`/ivcm-subphenotypes/runs/${runId}`);
+}
+
 function normalizeRunInput(input: SubphenotypeRunCreateInput) {
   return {
     ...input,

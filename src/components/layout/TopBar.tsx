@@ -20,7 +20,11 @@ export function TopBar() {
 
   const title =
     TITLES[pathname] ??
-    (pathname.startsWith("/patients") ? "Gestión clínica" : "Biotecare");
+    (pathname.startsWith("/patients")
+      ? "Gestión clínica"
+      : pathname.startsWith("/subfenotipos-ivcm")
+        ? "Subfenotipos IVCM"
+        : "Biotecare");
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background shadow-xs">

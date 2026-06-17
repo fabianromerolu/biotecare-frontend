@@ -640,23 +640,28 @@ function SubphenotypesDiagram() {
               </View>
               <View style={{ flexDirection: "row", backgroundColor: "#f8fafc", borderBottomWidth: 1, borderBottomColor: C.border, padding: "3 4" }}>
                 <Text style={{ flex: 1, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Corrida</Text>
-                <Text style={{ width: 38, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Imágenes</Text>
+                <Text style={{ width: 28, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Img.</Text>
                 <Text style={{ width: 34, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Clusters</Text>
-                <Text style={{ width: 28, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Acción</Text>
+                <Text style={{ width: 58, fontSize: 6.5, fontFamily: "Helvetica-Bold", color: C.textMuted }}>Acciones</Text>
               </View>
               <View style={{ flexDirection: "row", padding: "3 4" }}>
                 <Text style={{ flex: 1, fontSize: 7, color: C.textMid }}>8f3a21</Text>
-                <Text style={{ width: 38, fontSize: 7, color: C.textMid }}>12</Text>
+                <Text style={{ width: 28, fontSize: 7, color: C.textMid }}>12</Text>
                 <Text style={{ width: 34, fontSize: 7, color: C.textMid }}>3</Text>
-                <View style={[styles.mockupBtn, { width: 28, padding: "1 4", alignItems: "center" }]}>
-                  <Text style={{ fontSize: 6.5, color: C.white, fontFamily: "Helvetica-Bold" }}>Ver</Text>
+                <View style={{ width: 58, flexDirection: "row", gap: 3 }}>
+                  <View style={[styles.mockupBtn, { padding: "1 4", alignItems: "center" }]}>
+                    <Text style={{ fontSize: 6.5, color: C.white, fontFamily: "Helvetica-Bold" }}>Ver</Text>
+                  </View>
+                  <View style={[styles.mockupBtn, { backgroundColor: C.red, padding: "1 4", alignItems: "center" }]}>
+                    <Text style={{ fontSize: 6.5, color: C.white, fontFamily: "Helvetica-Bold" }}>Eliminar</Text>
+                  </View>
                 </View>
               </View>
             </View>
           </View>
 
           <View style={[styles.mockupCard, { borderColor: C.primary }]}>
-            <Text style={styles.mockupCardTitle}>④ Detalle de resultados</Text>
+            <Text style={styles.mockupCardTitle}>④ Pantalla aparte de detalle</Text>
             <View style={{ flexDirection: "row", gap: 4, marginBottom: 6 }}>
               {[
                 ["Imágenes", "12"],
@@ -719,7 +724,7 @@ function SubphenotypesDiagram() {
 
             <View style={{ marginTop: 6, borderWidth: 1, borderColor: C.border, borderRadius: 4, padding: 5 }}>
               <Text style={{ fontSize: 7, fontFamily: "Helvetica-Bold", color: C.textMid, marginBottom: 3 }}>
-                ⑦ Tabla de asignaciones
+                ⑦ Asignaciones e imagen
               </Text>
               <View style={{ flexDirection: "row", backgroundColor: "#f8fafc", padding: "2 3" }}>
                 {["Paciente", "Imagen", "Cluster", "PC1", "Nitidez"].map((header) => (
@@ -735,6 +740,11 @@ function SubphenotypesDiagram() {
                 <Text style={{ flex: 1, fontSize: 6.5, color: C.textMid }}>0.42</Text>
                 <Text style={{ flex: 1, fontSize: 6.5, color: C.textMid }}>128.3</Text>
               </View>
+              <View style={{ marginTop: 3, borderWidth: 1, borderColor: C.primaryLight, borderRadius: 3, padding: "2 3" }}>
+                <Text style={{ fontSize: 6.5, color: C.textMid }}>
+                  Desplegable: imagen original + Grad-CAM si existe
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -742,11 +752,11 @@ function SubphenotypesDiagram() {
       <View style={{ padding: 6, backgroundColor: "#fafafa" }}>
         <Callout n={1} text="Configura clusters, PCA, semilla y métodos de comparación." />
         <Callout n={2} text="Ejecuta la exploración solo con al menos seis imágenes IVCM legibles." />
-        <Callout n={3} text='El botón "Ver" abre el detalle de la corrida seleccionada.' />
+        <Callout n={3} text='El botón "Ver" abre una pantalla aparte; "Eliminar" borra solo la corrida exploratoria.' />
         <Callout n={4} text="El detalle reúne métricas, PCA, distribución y asignaciones." />
         <Callout n={5} text="El PCA permite explorar agrupaciones visuales, no diagnósticos." />
         <Callout n={6} text="La distribución ayuda a detectar clusters dominantes o minoritarios." />
-        <Callout n={7} text="La tabla permite revisar paciente, archivo, cluster y calidad de imagen." />
+        <Callout n={7} text="Cada asignación puede desplegar la imagen original y el Grad-CAM cuando exista." />
       </View>
     </View>
   );

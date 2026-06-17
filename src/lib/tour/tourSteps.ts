@@ -315,10 +315,17 @@ export const TOUR_ROUTES: TourRoute[] = [
         targetId: "subphenotypes__runs-card",
         title: "Corridas guardadas",
         content:
-          "Aqui se listan las exploraciones previas. Cada corrida conserva estado, fecha, numero de imagenes, clusters y un boton para ver su detalle sin tocar Prediction.",
+          "Aqui se listan las exploraciones previas. Cada corrida conserva estado, fecha, numero de imagenes y clusters. Use Ver para abrir el detalle en una pantalla aparte o Eliminar para borrar solo la corrida exploratoria.",
         placement: "bottom",
         roles: ["all"],
       },
+    ],
+  },
+
+  {
+    pathname: "/subfenotipos-ivcm/[runId]",
+    matchMode: "pattern",
+    steps: [
       {
         targetId: "subphenotypes__metrics",
         title: "Metricas principales",
@@ -348,6 +355,14 @@ export const TOUR_ROUTES: TourRoute[] = [
         title: "Asignaciones por imagen",
         content:
           "La tabla muestra paciente, archivo, cluster, PC1, PC2, nitidez, contraste y saturacion. Estos datos permiten auditar cada imagen y preparar analisis posteriores.",
+        placement: "top",
+        roles: ["all"],
+      },
+      {
+        targetId: "subphenotypes__assignment-image-disclosures",
+        title: "Imagen y Grad-CAM por asignacion",
+        content:
+          "Cada imagen puede desplegarse para ver la vista original y, si existe una prediccion clinica previa, su mapa Grad-CAM. Si no existe Grad-CAM, ejecute primero el analisis IA de esa imagen.",
         placement: "top",
         roles: ["all"],
       },

@@ -1,11 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { FileText, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Download, Eye, FileText, Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { MANUAL_VERSION, MANUAL_DATE } from "@/lib/manual/manualSections";
+import type { ManualPdfMode } from "./ManualPdfClient";
 
 // Importar el módulo completo con ssr:false para que @react-pdf/renderer
-// se inicialice en un único chunk de browser y no rompa su estado interno.
+// se inicialice solo cuando el usuario prepara o previsualiza el PDF.
 const ManualPdfClient = dynamic(
   () => import("./ManualPdfClient").then((m) => m.ManualPdfClient),
   {
@@ -20,6 +23,8 @@ const ManualPdfClient = dynamic(
 );
 
 export function ManualPdfSection() {
+  const [mode, setMode] = useState<ManualPdfMode | null>(null);
+
   return (
     <section className="space-y-4">
       <div>
@@ -31,7 +36,39 @@ export function ManualPdfSection() {
           Versión {MANUAL_VERSION} · {MANUAL_DATE} · Documento PDF listo para imprimir y archivar
         </p>
       </div>
-      <ManualPdfClient />
+
+      <div className="rounded-xl border bg-card p-4 shadow-xs">
+        <p className="text-sm text-muted-foreground">
+          Para que el manual web abra más rápido, el PDF completo se prepara solo cuando se solicita.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant={mode === "download" ? "default" : "outline"}
+            onClick={() => setMode("download")}
+          >
+            <Download className="size-4" aria-hidden="true" />
+            Preparar descarga
+          </Button>
+          <Button
+            type="button"
+            variant={mode === "viewer" ? "default" : "outline"}
+            onClick={() => setMode("viewer")}
+            className="hidden lg:inline-flex"
+          >
+            <Eye className="size-4" aria-hidden="true" />
+            Ver vista previa
+          </Button>
+          {mode && (
+            <Button type="button" variant="ghost" onClick={() => setMode(null)}>
+              <X className="size-4" aria-hidden="true" />
+              Cerrar PDF
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {mode && <ManualPdfClient mode={mode} />}
     </section>
   );
 }

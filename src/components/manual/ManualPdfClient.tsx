@@ -8,10 +8,45 @@ import { Download, FileText, Loader2 } from "lucide-react";
 import { ManualPdfDocument } from "./ManualPdf";
 import { APP_MANUAL_NAME } from "@/lib/manual/manualSections";
 
-export function ManualPdfClient() {
+export type ManualPdfMode = "download" | "viewer";
+
+interface ManualPdfClientProps {
+  mode: ManualPdfMode;
+}
+
+export function ManualPdfClient({ mode }: ManualPdfClientProps) {
+  if (mode === "download") {
+    return (
+      <div className="rounded-xl border bg-card p-4 shadow-xs">
+        <PDFDownloadLink
+          document={<ManualPdfDocument />}
+          fileName="biotecare-manual-usuario.pdf"
+          aria-label={`Descargar manual de usuario de ${APP_MANUAL_NAME} en PDF`}
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          {({ loading }) =>
+            loading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                Preparando PDF...
+              </>
+            ) : (
+              <>
+                <Download className="size-4" aria-hidden="true" />
+                Descargar PDF
+              </>
+            )
+          }
+        </PDFDownloadLink>
+        <p className="mt-3 text-xs text-muted-foreground">
+          La generación puede tardar unos segundos porque el documento se crea en el navegador.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {/* Visor inline (solo desktop) */}
+    <div className="space-y-3">
       <div className="hidden lg:block">
         <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
           <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2.5">
@@ -30,38 +65,13 @@ export function ManualPdfClient() {
         </div>
       </div>
 
-      {/* Botón de descarga (siempre visible) */}
-      <div className="mt-4 flex flex-col items-start gap-3 lg:mt-3">
-        <PDFDownloadLink
-          document={<ManualPdfDocument />}
-          fileName="biotecare-manual-usuario.pdf"
-          aria-label={`Descargar manual de usuario de ${APP_MANUAL_NAME} en PDF`}
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          {({ loading }) =>
-            loading ? (
-              <>
-                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                Generando PDF…
-              </>
-            ) : (
-              <>
-                <Download className="size-4" aria-hidden="true" />
-                Descargar PDF
-              </>
-            )
-          }
-        </PDFDownloadLink>
-
-        {/* Fallback móvil */}
-        <div className="flex flex-col items-center gap-3 py-6 text-center lg:hidden">
-          <FileText className="size-9 text-muted-foreground" aria-hidden="true" />
-          <p className="text-sm text-muted-foreground">
-            El visor PDF está disponible en pantallas de escritorio.
-            Usa el botón de arriba para descargar el documento.
-          </p>
-        </div>
+      <div className="flex flex-col items-center gap-3 rounded-xl border bg-card py-6 text-center lg:hidden">
+        <FileText className="size-9 text-muted-foreground" aria-hidden="true" />
+        <p className="max-w-md px-4 text-sm text-muted-foreground">
+          La vista previa PDF está disponible en pantallas de escritorio.
+          Para móviles, usa la opción de preparar descarga.
+        </p>
       </div>
-    </>
+    </div>
   );
 }

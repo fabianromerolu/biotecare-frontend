@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "manual:generate": "node scripts/update-manual.mjs",
+    "manual:pdf": "node scripts/generate-manual-pdf.cjs",
     "manual:screenshots": "node scripts/capture-manual-screenshots.mjs"
   },
   "dependencies": {

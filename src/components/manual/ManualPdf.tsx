@@ -511,8 +511,8 @@ function AnalysisDiagram() {
                 {/* Needle */}
                 <Line x1="40" y1="42" x2="55" y2="20" stroke="#1e293b" strokeWidth="1.5" strokeLinecap="round" />
                 <Circle cx="40" cy="42" r="2.5" fill="#1e293b" />
-                <text x="40" y="32" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#ef4444">65%</text>
               </Svg>
+              <Text style={{ fontSize: 8, fontFamily: "Helvetica-Bold", color: C.red }}>65%</Text>
               <Text style={{ fontSize: 7, color: C.red }}>Ojo seco</Text>
             </View>
             {/* Biomarkers */}
@@ -835,8 +835,7 @@ export function ManualPdfDocument() {
             {section.questions.map((q) => {
               const Diagram = q.previewId ? PDF_DIAGRAMS[q.previewId] : null;
               return (
-                /* wrap=false only on text-only questions; diagrams can span pages */
-                <View key={q.id} style={styles.questionBlock} wrap={!Diagram}>
+                <View key={q.id} style={styles.questionBlock}>
                   <Text style={styles.questionText}>{q.question}</Text>
                   <Text style={styles.answerText}>{q.answer}</Text>
 
